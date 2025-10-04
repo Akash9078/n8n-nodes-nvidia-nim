@@ -14,7 +14,7 @@ export class NvidiaNim implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["model"]}}',
-		description: 'Chat with NVIDIA NIM AI models - Use with tools, memory, and function calling',
+		description: 'Chat with NVIDIA NIM AI models - Simple conversational AI',
 		defaults: {
 			name: 'NVIDIA NIM',
 		},
@@ -133,11 +133,6 @@ export class NvidiaNim implements INodeType {
 										value: 'assistant',
 										description: 'AI assistant previous responses (for conversation history)',
 									},
-									{
-										name: 'Tool',
-										value: 'tool',
-										description: 'Tool execution results to send back to the model',
-									},
 								],
 								default: 'user',
 								description: 'The role of the message sender',
@@ -150,112 +145,12 @@ export class NvidiaNim implements INodeType {
 									rows: 4,
 								},
 								default: '',
-								description: 'The message content. For tool role, this is the function execution result.',
+								description: 'The message content',
 								placeholder: 'Enter your message here',
 							},
-							{
-								displayName: 'Tool Call ID',
-								name: 'tool_call_id',
-								type: 'string',
-								displayOptions: {
-									show: {
-										role: ['tool'],
-									},
-								},
-								default: '',
-								required: true,
-								description: 'The ID of the tool call this is responding to (from tool_calls in assistant message)',
-								placeholder: 'call_abc123',
-							},
-							{
-								displayName: 'Tool Call Name',
-								name: 'name',
-								type: 'string',
-								displayOptions: {
-									show: {
-										role: ['tool'],
-									},
-								},
-								default: '',
-								description: 'The name of the tool that was called',
-								placeholder: 'get_weather',
-							},
 						],
 					},
 				],
-			},
-			{
-				displayName: 'Tools',
-				name: 'tools',
-				type: 'fixedCollection',
-				typeOptions: {
-					multipleValues: true,
-				},
-				default: {},
-				description: 'Functions that the model can call. Enables function calling/tool use capabilities.',
-				options: [
-					{
-						name: 'toolValues',
-						displayName: 'Tool',
-						values: [
-							{
-								displayName: 'Function Name',
-								name: 'name',
-								type: 'string',
-								default: '',
-								required: true,
-								description: 'The name of the function to call (e.g., get_weather)',
-								placeholder: 'get_current_weather',
-							},
-							{
-								displayName: 'Function Description',
-								name: 'description',
-								type: 'string',
-								typeOptions: {
-									rows: 2,
-								},
-								default: '',
-								required: true,
-								description: 'A description of what the function does',
-								placeholder: 'Get the current weather in a given location',
-							},
-							{
-								displayName: 'Parameters (JSON Schema)',
-								name: 'parameters',
-								type: 'json',
-								default: '{\n  "type": "object",\n  "properties": {\n    "location": {\n      "type": "string",\n      "description": "City and state, e.g. San Francisco, CA"\n    }\n  },\n  "required": ["location"]\n}',
-								description: 'JSON Schema describing the function parameters',
-								typeOptions: {
-									rows: 10,
-								},
-							},
-						],
-					},
-				],
-			},
-			{
-				displayName: 'Tool Choice',
-				name: 'tool_choice',
-				type: 'options',
-				options: [
-					{
-						name: 'Auto',
-						value: 'auto',
-						description: 'Model decides whether to call functions',
-					},
-					{
-						name: 'None',
-						value: 'none',
-						description: 'Model will not call any functions',
-					},
-					{
-						name: 'Required',
-						value: 'required',
-						description: 'Model must call one or more functions',
-					},
-				],
-				default: 'auto',
-				description: 'Controls how the model responds to function calls',
 			},
 
 			// ==================== ADDITIONAL OPTIONS ====================
@@ -352,64 +247,27 @@ export class NvidiaNim implements INodeType {
 			try {
 				const model = this.getNodeParameter('model', i) as string;
 				const messagesData = this.getNodeParameter('messages', i) as any;
-				const toolsData = this.getNodeParameter('tools', i, {}) as any;
-				const toolChoice = this.getNodeParameter('tool_choice', i, 'auto') as string;
 				const additionalOptions = this.getNodeParameter('additionalOptions', i, {}) as any;
 
-				// Build messages array with proper structure for tool messages
-				const messages = messagesData.messageValues?.map((msg: any) => {
-					const message: any = {
-						role: msg.role,
-						content: msg.content,
-					};
-					
-					// Add tool-specific fields for tool role messages
-					if (msg.role === 'tool') {
-						if (msg.tool_call_id) {
-							message.tool_call_id = msg.tool_call_id;
-						}
-						if (msg.name) {
-							message.name = msg.name;
-						}
-					}
-					
-					return message;
-				}) || [];
+				// Build messages array
+				const messages = messagesData.messageValues?.map((msg: any) => ({
+					role: msg.role,
+					content: msg.content,
+				})) || [];
+
+				// Validate messages array is not empty
+				if (messages.length === 0) {
+					throw new NodeOperationError(
+						this.getNode(),
+						'At least one message is required. Please add a message in the Messages field.',
+						{ itemIndex: i },
+					);
+				}
 
 				// Prepare request body
 				const body: any = {
 					model,
 					messages,
-				};
-
-				// Add tools if provided
-				if (toolsData.toolValues && toolsData.toolValues.length > 0) {
-					body.tools = toolsData.toolValues.map((tool: any) => {
-						let parameters;
-						try {
-							parameters = typeof tool.parameters === 'string' 
-								? JSON.parse(tool.parameters) 
-								: tool.parameters;
-						} catch (error) {
-							throw new NodeOperationError(
-								this.getNode(),
-								`Invalid JSON in parameters for tool "${tool.name}": ${(error as Error).message}`,
-								{ itemIndex: i },
-							);
-						}
-						
-						return {
-							type: 'function',
-							function: {
-								name: tool.name,
-								description: tool.description,
-								parameters,
-							},
-						};
-					});
-					
-					// Add tool_choice if tools are provided
-					body.tool_choice = toolChoice;
 				}
 
 				// Add additional options

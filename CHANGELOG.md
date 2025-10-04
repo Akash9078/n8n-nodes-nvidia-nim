@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.2] - 2025-01-10
+
+### Removed
+- **Tools Functionality**: Removed tools/function calling from main node (use Chat Model sub-node with AI Agent for advanced features)
+- **Tool Choice Parameter**: Removed tool_choice parameter
+- **Tool Role**: Removed 'tool' role option from messages
+
+### Fixed
+- **Empty Messages Validation**: Added proper validation to ensure at least one message is provided
+- **API Error**: Fixed "List should have at least 1 item after validation" error by validating messages array
+
+### Changed
+- **Simplified Main Node**: Main node is now for simple chat completions only
+- **Description Updated**: Changed description to reflect simpler use case
+- **For Advanced Features**: Use the "NVIDIA NIM Chat Model" sub-node with n8n's AI Agent for tools, memory, and function calling
+
 ## [2.0.1] - 2025-01-10
 
 ### Fixed
