@@ -1,0 +1,63 @@
+{
+	"name": "n8n-nodes-nvidia-nim",
+	"version": "1.0.0",
+	"description": "n8n community node for NVIDIA NIM AI agent integration",
+	"keywords": [
+		"n8n-community-node-package",
+		"n8n",
+		"nvidia",
+		"nim",
+		"ai",
+		"llm",
+		"chat",
+		"embeddings",
+		"machine-learning"
+	],
+	"license": "MIT",
+	"homepage": "https://github.com/yourusername/n8n-nodes-nvidia-nim",
+	"author": {
+		"name": "Your Name",
+		"email": "your.email@example.com"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/yourusername/n8n-nodes-nvidia-nim.git"
+	},
+	"engines": {
+		"node": ">=18.17.0"
+	},
+	"main": "index.js",
+	"scripts": {
+		"build": "tsc && gulp build:icons",
+		"dev": "tsc --watch",
+		"format": "prettier nodes credentials --write",
+		"lint": "eslint nodes credentials package.json",
+		"lintfix": "eslint nodes credentials package.json --fix",
+		"prepublishOnly": "npm run build && npm run lint -c .eslintrc.prepublish.js nodes credentials package.json"
+	},
+	"files": [
+		"dist"
+	],
+	"n8n": {
+		"n8nNodesApiVersion": 1,
+		"credentials": [
+			"dist/credentials/NvidiaNimApi.credentials.js"
+		],
+		"nodes": [
+			"dist/nodes/NvidiaNim/NvidiaNim.node.js"
+		]
+	},
+	"devDependencies": {
+		"@typescript-eslint/parser": "^6.0.0",
+		"eslint": "^8.42.0",
+		"eslint-plugin-n8n-nodes-base": "^1.14.0",
+		"gulp": "^4.0.2",
+		"n8n-workflow": "^1.0.0",
+		"prettier": "^2.7.1",
+		"typescript": "^5.0.0"
+	},
+	"peerDependencies": {
+		"n8n-workflow": "*"
+	},
+	"dependencies": {}
+}
