@@ -5,6 +5,124 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2025-01-10
+
+### 🚨 BREAKING CHANGE - New Visual AI Agent Architecture
+
+This is a major architectural change introducing n8n's visual sub-node pattern for AI Agents.
+
+### Added - Visual Sub-Node Architecture 🎨
+- **NVIDIA NIM Chat Model Sub-Node** ⭐ NEW: Connect visually to AI Agents and Chains
+  - Outputs `NodeConnectionTypes.AiLanguageModel`
+  - Compatible with n8n's built-in AI Agent node
+  - LangChain integration via `ChatOpenAI` class
+  - Visual drag-and-drop connections
+  - Appears in "Chat Models (Recommended)" category
+  
+- **LangChain Dependencies**: Full integration with LangChain ecosystem
+  - `@langchain/openai`: ^0.6.14
+  - `@langchain/core`: ^0.3.78
+  - `langchain`: ^0.3.35
+
+### Changed - Architecture Redesign
+- **Chat Model is now a Sub-Node**: Use separate "NVIDIA NIM Chat Model" node
+- **Connect to n8n's AI Agent**: Visual workflow building with sub-nodes
+- **Memory & Tools Support**: Works with n8n's built-in Memory and Tool nodes
+- **Production Ready**: Follows established n8n AI Agent patterns
+
+### Migration Guide (v1.x → v2.0)
+
+**OLD (v1.x - Parameter-Based):**
+```
+NVIDIA NIM Node
+├─ Messages (parameter)
+├─ Tools (parameter)
+└─ Model (parameter)
+```
+
+**NEW (v2.0 - Visual Sub-Nodes):**
+```
+Workflow Canvas:
+┌─────────────────────┐
+│  NVIDIA NIM Chat    │
+│  Model              │◄─── Configure model
+└──────────┬──────────┘
+           │ ai_languageModel
+           ▼
+┌─────────────────────┐
+│  AI Agent           │◄─── n8n built-in
+│  (n8n built-in)     │
+├─ Memory (optional)  │◄─── Visual connections
+├─ Tools (optional)   │
+└─────────────────────┘
+```
+
+### Benefits
+- ✅ Visual workflow building
+- ✅ Compatible with all n8n AI nodes
+- ✅ Modular architecture (swap Chat Models easily)
+- ✅ Memory persistence via n8n's Memory nodes
+- ✅ Tool use via n8n's Tool nodes
+- ✅ Better debugging (see data flow)
+- ✅ Established n8n patterns
+- ✅ LangChain ecosystem access
+
+### Example Usage
+1. Add "NVIDIA NIM Chat Model" node
+2. Configure model (e.g., `meta/llama3-8b-instruct`)
+3. Add n8n's "AI Agent" node
+4. Connect Chat Model → AI Agent (ai_languageModel)
+5. Optionally add Memory nodes → AI Agent
+6. Optionally add Tool nodes → AI Agent
+7. Execute workflow!
+
+### Breaking Changes
+- ⚠️ Previous parameter-based tool configuration no longer supported
+- ⚠️ Use n8n's Tool nodes instead of tools parameter
+- ⚠️ Chat Model must be connected as sub-node
+- ⚠️ Workflows from v1.x will need restructuring
+
+### Documentation
+- Updated README with new architecture
+- Visual connection examples
+- Sub-node usage guide
+- Migration guide from v1.x
+
+## [1.2.0] - 2025-01-10
+
+### Added - Production AI Agent Support 🤖
+- **Assistant Role Re-added**: Essential for multi-turn conversations with tool calls
+- **Tool Role Support** ⭐ NEW: Proper OpenAI-compatible tool message handling
+- **Tool Call ID Field**: Link tool execution results to specific tool calls
+- **Tool Name Field**: Specify which function was executed
+- **Enhanced Message Structure**: Proper handling of assistant messages with tool_calls
+- **Comprehensive AI_AGENT_GUIDE.md**: 400+ line production guide with:
+  - Message role explanations (system, user, assistant, tool)
+  - Complete agent workflow patterns
+  - Memory management best practices (rolling window, summarization, smart memory formation)
+  - n8n workflow implementation patterns
+  - Token optimization strategies
+  - Production checklist
+  - Complete working examples
+  - Troubleshooting guide
+
+### Fixed
+- **Tool Workflow Compatibility**: Messages now properly structured for multi-turn tool calling
+- **Conversation History**: Assistant role enables proper conversation context
+- **Tool Response Handling**: Tool messages properly formatted with required fields
+
+### Technical Details
+- Tool messages now include `tool_call_id` and `name` fields as per OpenAI spec
+- Message building logic updated to conditionally add tool-specific fields
+- Supports complete agent loop: User → Assistant (tool calls) → Tool (results) → Assistant (final answer)
+
+### Best Practices Implemented
+Based on 2025 industry standards from:
+- Anthropic's Context Engineering research
+- Mem0's Memory Management guide
+- OpenAI's Function Calling specification
+- LangGraph's Agent Architecture patterns
+
 ## [1.1.0] - 2025-01-10
 
 ### Added - Function Calling / Tool Use Support 🚀

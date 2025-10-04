@@ -13,8 +13,8 @@ export class NvidiaNim implements INodeType {
 		icon: 'file:nvidia-nim.svg',
 		group: ['transform'],
 		version: 1,
-		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
-		description: 'Interact with NVIDIA NIM AI models for chat, completions, and embeddings',
+		subtitle: '={{$parameter["model"]}}',
+		description: 'Chat with NVIDIA NIM AI models - Use with tools, memory, and function calling',
 		defaults: {
 			name: 'NVIDIA NIM',
 		},
@@ -27,140 +27,77 @@ export class NvidiaNim implements INodeType {
 			},
 		],
 		properties: [
-			// ==================== RESOURCE ====================
-			{
-				displayName: 'Resource',
-				name: 'resource',
-				type: 'options',
-				noDataExpression: true,
-				options: [
-					{
-						name: 'Chat',
-						value: 'chat',
-						description: 'Create chat completions with conversation context',
-					},
-					{
-						name: 'Completion',
-						value: 'completion',
-						description: 'Generate text completions from prompts',
-					},
-					{
-						name: 'Embedding',
-						value: 'embedding',
-						description: 'Generate embeddings for text inputs',
-					},
-					{
-						name: 'Model',
-						value: 'model',
-						description: 'List and manage available models',
-					},
-				],
-				default: 'chat',
-			},
-
-			// ==================== CHAT OPERATIONS ====================
-			{
-				displayName: 'Operation',
-				name: 'operation',
-				type: 'options',
-				noDataExpression: true,
-				displayOptions: {
-					show: {
-						resource: ['chat'],
-					},
-				},
-				options: [
-					{
-						name: 'Create',
-						value: 'create',
-						description: 'Create a chat completion',
-						action: 'Create a chat completion',
-					},
-				],
-				default: 'create',
-			},
-
-			// ==================== COMPLETION OPERATIONS ====================
-			{
-				displayName: 'Operation',
-				name: 'operation',
-				type: 'options',
-				noDataExpression: true,
-				displayOptions: {
-					show: {
-						resource: ['completion'],
-					},
-				},
-				options: [
-					{
-						name: 'Create',
-						value: 'create',
-						description: 'Create a text completion',
-						action: 'Create a text completion',
-					},
-				],
-				default: 'create',
-			},
-
-			// ==================== EMBEDDING OPERATIONS ====================
-			{
-				displayName: 'Operation',
-				name: 'operation',
-				type: 'options',
-				noDataExpression: true,
-				displayOptions: {
-					show: {
-						resource: ['embedding'],
-					},
-				},
-				options: [
-					{
-						name: 'Create',
-						value: 'create',
-						description: 'Create embeddings for text',
-						action: 'Create embeddings',
-					},
-				],
-				default: 'create',
-			},
-
-			// ==================== MODEL OPERATIONS ====================
-			{
-				displayName: 'Operation',
-				name: 'operation',
-				type: 'options',
-				noDataExpression: true,
-				displayOptions: {
-					show: {
-						resource: ['model'],
-					},
-				},
-				options: [
-					{
-						name: 'List',
-						value: 'list',
-						description: 'List all available models',
-						action: 'List available models',
-					},
-				],
-				default: 'list',
-			},
-
-			// ==================== CHAT FIELDS ====================
+			// ==================== MODEL SELECTION ====================
 			{
 				displayName: 'Model',
 				name: 'model',
-				type: 'string',
-				displayOptions: {
-					show: {
-						resource: ['chat'],
-						operation: ['create'],
+				type: 'options',
+				noDataExpression: true,
+				options: [
+					{
+						name: 'Gemma 2 27B Instruct',
+						value: 'google/gemma-2-27b-it',
+						description: 'Larger Google model',
 					},
-				},
-				default: 'meta/llama3-8b-instruct',
+					{
+						name: 'Gemma 2 9B Instruct',
+						value: 'google/gemma-2-9b-it',
+						description: 'Google\'s efficient model',
+					},
+					{
+						name: 'Llama 3.1 405B Instruct',
+						value: 'meta/llama-3.1-405b-instruct',
+						description: 'Maximum capability and performance',
+					},
+					{
+						name: 'Llama 3.1 70B Instruct',
+						value: 'meta/llama-3.1-70b-instruct',
+						description: 'More capable, better reasoning',
+					},
+					{
+						name: 'Llama 3.1 8B Instruct',
+						value: 'meta/llama-3.1-8b-instruct',
+						description: 'Fast and efficient for most tasks',
+					},
+					{
+						name: 'Llama 3.2 3B Instruct',
+						value: 'meta/llama-3.2-3b-instruct',
+						description: 'Ultra-fast, lightweight model',
+					},
+					{
+						name: 'Llama 3.2 90B Vision Instruct',
+						value: 'meta/llama-3.2-90b-vision-instruct',
+						description: 'Multimodal: text + image understanding',
+					},
+					{
+						name: 'Mistral 7B Instruct v0.3',
+						value: 'mistralai/mistral-7b-instruct-v0.3',
+						description: 'Fast, efficient general purpose',
+					},
+					{
+						name: 'Mixtral 8x7B Instruct',
+						value: 'mistralai/mixtral-8x7b-instruct-v0.1',
+						description: 'Excellent for coding and technical tasks',
+					},
+					{
+						name: 'Nemotron 4 340B Instruct',
+						value: 'nvidia/nemotron-4-340b-instruct',
+						description: 'NVIDIA\'s most advanced model',
+					},
+					{
+						name: 'Phi-3 Mini 128K Instruct',
+						value: 'microsoft/phi-3-mini-128k-instruct',
+						description: 'Compact with long context (128K tokens)',
+					},
+					{
+						name: 'Phi-3 Vision 128K Instruct',
+						value: 'microsoft/phi-3-vision-128k-instruct',
+						description: 'Vision + text with long context',
+					},
+				],
+				default: 'meta/llama-3.1-8b-instruct',
 				required: true,
-				description: 'The AI model to use. Common options: meta/llama3-8b-instruct, meta/llama3-70b-instruct.',
-				placeholder: 'meta/llama3-8b-instruct',
+				description: 'Select the NVIDIA NIM model to use for chat completions',
 			},
 			{
 				displayName: 'Messages',
@@ -197,6 +134,16 @@ export class NvidiaNim implements INodeType {
 										value: 'user',
 										description: 'User messages or questions',
 									},
+									{
+										name: 'Assistant',
+										value: 'assistant',
+										description: 'AI assistant previous responses (for conversation history)',
+									},
+									{
+										name: 'Tool',
+										value: 'tool',
+										description: 'Tool execution results to send back to the model',
+									},
 								],
 								default: 'user',
 								description: 'The role of the message sender',
@@ -209,8 +156,35 @@ export class NvidiaNim implements INodeType {
 									rows: 4,
 								},
 								default: '',
-								description: 'The message content',
+								description: 'The message content. For tool role, this is the function execution result.',
 								placeholder: 'Enter your message here',
+							},
+							{
+								displayName: 'Tool Call ID',
+								name: 'tool_call_id',
+								type: 'string',
+								displayOptions: {
+									show: {
+										role: ['tool'],
+									},
+								},
+								default: '',
+								required: true,
+								description: 'The ID of the tool call this is responding to (from tool_calls in assistant message)',
+								placeholder: 'call_abc123',
+							},
+							{
+								displayName: 'Tool Call Name',
+								name: 'name',
+								type: 'string',
+								displayOptions: {
+									show: {
+										role: ['tool'],
+									},
+								},
+								default: '',
+								description: 'The name of the tool that was called',
+								placeholder: 'get_weather',
 							},
 						],
 					},
@@ -379,11 +353,6 @@ export class NvidiaNim implements INodeType {
 				type: 'collection',
 				placeholder: 'Add Option',
 				default: {},
-				displayOptions: {
-					show: {
-						resource: ['chat', 'completion'],
-					},
-				},
 			options: [
 				{
 					displayName: 'Frequency Penalty',
@@ -465,172 +434,95 @@ export class NvidiaNim implements INodeType {
 };	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 		const items = this.getInputData();
 		const returnData: INodeExecutionData[] = [];
-		const resource = this.getNodeParameter('resource', 0) as string;
-		const operation = this.getNodeParameter('operation', 0) as string;
 
 		// Process each input item
 		for (let i = 0; i < items.length; i++) {
 			try {
-				let responseData;
+				const model = this.getNodeParameter('model', i) as string;
+				const messagesData = this.getNodeParameter('messages', i) as any;
+				const toolsData = this.getNodeParameter('tools', i, {}) as any;
+				const toolChoice = this.getNodeParameter('tool_choice', i, 'auto') as string;
+				const additionalOptions = this.getNodeParameter('additionalOptions', i, {}) as any;
 
-				// ==================== CHAT ====================
-				if (resource === 'chat') {
-					if (operation === 'create') {
-						const model = this.getNodeParameter('model', i) as string;
-						const messagesData = this.getNodeParameter('messages', i) as any;
-						const toolsData = this.getNodeParameter('tools', i, {}) as any;
-						const toolChoice = this.getNodeParameter('tool_choice', i, 'auto') as string;
-						const additionalOptions = this.getNodeParameter('additionalOptions', i, {}) as any;
-
-						// Build messages array
-						const messages = messagesData.messageValues?.map((msg: any) => ({
-							role: msg.role,
-							content: msg.content,
-						})) || [];
-
-						// Prepare request body
-						const body: any = {
-							model,
-							messages,
-						};
-
-						// Add tools if provided
-						if (toolsData.toolValues && toolsData.toolValues.length > 0) {
-							body.tools = toolsData.toolValues.map((tool: any) => {
-								let parameters;
-								try {
-									parameters = typeof tool.parameters === 'string' 
-										? JSON.parse(tool.parameters) 
-										: tool.parameters;
-								} catch (error) {
-									throw new NodeOperationError(
-										this.getNode(),
-										`Invalid JSON in parameters for tool "${tool.name}": ${(error as Error).message}`,
-										{ itemIndex: i },
-									);
-								}
-								
-								return {
-									type: 'function',
-									function: {
-										name: tool.name,
-										description: tool.description,
-										parameters,
-									},
-								};
-							});
-							
-							// Add tool_choice if tools are provided
-							body.tool_choice = toolChoice;
+				// Build messages array with proper structure for tool messages
+				const messages = messagesData.messageValues?.map((msg: any) => {
+					const message: any = {
+						role: msg.role,
+						content: msg.content,
+					};
+					
+					// Add tool-specific fields for tool role messages
+					if (msg.role === 'tool') {
+						if (msg.tool_call_id) {
+							message.tool_call_id = msg.tool_call_id;
 						}
-
-						// Add additional options
-						if (additionalOptions.max_tokens) body.max_tokens = additionalOptions.max_tokens;
-						if (additionalOptions.temperature !== undefined) body.temperature = additionalOptions.temperature;
-						if (additionalOptions.top_p !== undefined) body.top_p = additionalOptions.top_p;
-						if (additionalOptions.frequency_penalty !== undefined) body.frequency_penalty = additionalOptions.frequency_penalty;
-						if (additionalOptions.presence_penalty !== undefined) body.presence_penalty = additionalOptions.presence_penalty;
-						if (additionalOptions.stream !== undefined) body.stream = additionalOptions.stream;
-						if (additionalOptions.stop) {
-							body.stop = additionalOptions.stop.split(',').map((s: string) => s.trim());
+						if (msg.name) {
+							message.name = msg.name;
 						}
-
-						// Make API request
-						responseData = await this.helpers.requestWithAuthentication.call(
-							this,
-							'nvidiaNimApi',
-							{
-								method: 'POST',
-					baseURL: (await this.getCredentials('nvidiaNimApi')).baseUrl as string,
-					url: '/chat/completions',
-								body,
-								json: true,
-							},
-						);
 					}
-				}
+					
+					return message;
+				}) || [];
 
-				// ==================== COMPLETION ====================
-				else if (resource === 'completion') {
-					if (operation === 'create') {
-						const model = this.getNodeParameter('model', i) as string;
-						const prompt = this.getNodeParameter('prompt', i) as string;
-						const additionalOptions = this.getNodeParameter('additionalOptions', i, {}) as any;
+				// Prepare request body
+				const body: any = {
+					model,
+					messages,
+				};
 
-						// Prepare request body
-						const body: any = {
-							model,
-							prompt,
-						};
-
-						// Add additional options
-						if (additionalOptions.max_tokens) body.max_tokens = additionalOptions.max_tokens;
-						if (additionalOptions.temperature !== undefined) body.temperature = additionalOptions.temperature;
-						if (additionalOptions.top_p !== undefined) body.top_p = additionalOptions.top_p;
-						if (additionalOptions.frequency_penalty !== undefined) body.frequency_penalty = additionalOptions.frequency_penalty;
-						if (additionalOptions.presence_penalty !== undefined) body.presence_penalty = additionalOptions.presence_penalty;
-						if (additionalOptions.stream !== undefined) body.stream = additionalOptions.stream;
-						if (additionalOptions.stop) {
-							body.stop = additionalOptions.stop.split(',').map((s: string) => s.trim());
+				// Add tools if provided
+				if (toolsData.toolValues && toolsData.toolValues.length > 0) {
+					body.tools = toolsData.toolValues.map((tool: any) => {
+						let parameters;
+						try {
+							parameters = typeof tool.parameters === 'string' 
+								? JSON.parse(tool.parameters) 
+								: tool.parameters;
+						} catch (error) {
+							throw new NodeOperationError(
+								this.getNode(),
+								`Invalid JSON in parameters for tool "${tool.name}": ${(error as Error).message}`,
+								{ itemIndex: i },
+							);
 						}
-
-						// Make API request
-						responseData = await this.helpers.requestWithAuthentication.call(
-							this,
-							'nvidiaNimApi',
-							{
-								method: 'POST',
-					baseURL: (await this.getCredentials('nvidiaNimApi')).baseUrl as string,
-					url: '/completions',
-								body,
-								json: true,
+						
+						return {
+							type: 'function',
+							function: {
+								name: tool.name,
+								description: tool.description,
+								parameters,
 							},
-						);
-					}
-				}
-
-				// ==================== EMBEDDING ====================
-				else if (resource === 'embedding') {
-					if (operation === 'create') {
-						const model = this.getNodeParameter('model', i) as string;
-						const input = this.getNodeParameter('input', i) as string;
-
-						const body = {
-							model,
-							input,
 						};
-
-						// Make API request
-						responseData = await this.helpers.requestWithAuthentication.call(
-							this,
-							'nvidiaNimApi',
-							{
-								method: 'POST',
-					baseURL: (await this.getCredentials('nvidiaNimApi')).baseUrl as string,
-					url: '/embeddings',
-								body,
-								json: true,
-							},
-						);
-					}
+					});
+					
+					// Add tool_choice if tools are provided
+					body.tool_choice = toolChoice;
 				}
 
-				// ==================== MODEL ====================
-				else if (resource === 'model') {
-					if (operation === 'list') {
-						// Make API request
-						responseData = await this.helpers.requestWithAuthentication.call(
-							this,
-							'nvidiaNimApi',
-							{
-								method: 'GET',
-					baseURL: (await this.getCredentials('nvidiaNimApi')).baseUrl as string,
-					url: '/models',
-								json: true,
-							},
-						);
-					}
+				// Add additional options
+				if (additionalOptions.max_tokens) body.max_tokens = additionalOptions.max_tokens;
+				if (additionalOptions.temperature !== undefined) body.temperature = additionalOptions.temperature;
+				if (additionalOptions.top_p !== undefined) body.top_p = additionalOptions.top_p;
+				if (additionalOptions.frequency_penalty !== undefined) body.frequency_penalty = additionalOptions.frequency_penalty;
+				if (additionalOptions.presence_penalty !== undefined) body.presence_penalty = additionalOptions.presence_penalty;
+				if (additionalOptions.stream !== undefined) body.stream = additionalOptions.stream;
+				if (additionalOptions.stop) {
+					body.stop = additionalOptions.stop.split(',').map((s: string) => s.trim());
 				}
+
+				// Make API request
+				const responseData = await this.helpers.requestWithAuthentication.call(
+					this,
+					'nvidiaNimApi',
+					{
+						method: 'POST',
+						baseURL: (await this.getCredentials('nvidiaNimApi')).baseUrl as string,
+						url: '/chat/completions',
+						body,
+						json: true,
+					},
+				);
 
 				// Add to return data with proper item linking
 				returnData.push({
