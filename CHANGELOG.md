@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.1] - 2025-01-10
+
+### Fixed
+- **Parameter Dependencies**: Removed `displayOptions` from fixedCollection parent parameters that referenced removed `resource` and `operation` fields
+- **Removed Legacy Fields**: Cleaned up old completion and embedding parameter definitions
+- **Build Errors**: Fixed "Could not resolve parameter dependencies. Max iterations reached!" error
+
+### Changed
+- Main node now always shows Messages, Tools, and Tool Choice parameters (no conditional display)
+
 ## [2.0.0] - 2025-01-10
 
 ### 🚨 BREAKING CHANGE - New Visual AI Agent Architecture

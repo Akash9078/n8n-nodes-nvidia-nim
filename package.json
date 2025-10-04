@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-nvidia-nim",
-	"version": "2.0.0",
+	"version": "2.0.1",
 	"description": "n8n community node for NVIDIA NIM - Visual AI Agent architecture with Chat Model, Memory, and Tools sub-nodes",
 	"keywords": [
 		"n8n-community-node-package",

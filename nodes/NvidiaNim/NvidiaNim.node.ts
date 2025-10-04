@@ -106,12 +106,6 @@ export class NvidiaNim implements INodeType {
 				typeOptions: {
 					multipleValues: true,
 				},
-				displayOptions: {
-					show: {
-						resource: ['chat'],
-						operation: ['create'],
-					},
-				},
 				default: {},
 				description: 'The conversation messages',
 				options: [
@@ -197,12 +191,6 @@ export class NvidiaNim implements INodeType {
 				typeOptions: {
 					multipleValues: true,
 				},
-				displayOptions: {
-					show: {
-						resource: ['chat'],
-						operation: ['create'],
-					},
-				},
 				default: {},
 				description: 'Functions that the model can call. Enables function calling/tool use capabilities.',
 				options: [
@@ -249,12 +237,6 @@ export class NvidiaNim implements INodeType {
 				displayName: 'Tool Choice',
 				name: 'tool_choice',
 				type: 'options',
-				displayOptions: {
-					show: {
-						resource: ['chat'],
-						operation: ['create'],
-					},
-				},
 				options: [
 					{
 						name: 'Auto',
@@ -274,76 +256,6 @@ export class NvidiaNim implements INodeType {
 				],
 				default: 'auto',
 				description: 'Controls how the model responds to function calls',
-			},
-
-			// ==================== COMPLETION FIELDS ====================
-			{
-				displayName: 'Model',
-				name: 'model',
-				type: 'string',
-				displayOptions: {
-					show: {
-						resource: ['completion'],
-						operation: ['create'],
-					},
-				},
-				default: 'meta/llama3-8b-instruct',
-				required: true,
-				description: 'The AI model to use for text completion',
-				placeholder: 'meta/llama3-8b-instruct',
-			},
-			{
-				displayName: 'Prompt',
-				name: 'prompt',
-				type: 'string',
-				typeOptions: {
-					rows: 4,
-				},
-				displayOptions: {
-					show: {
-						resource: ['completion'],
-						operation: ['create'],
-					},
-				},
-				default: '',
-				required: true,
-				description: 'The prompt to generate completions for',
-				placeholder: 'Once upon a time...',
-			},
-
-			// ==================== EMBEDDING FIELDS ====================
-			{
-				displayName: 'Model',
-				name: 'model',
-				type: 'string',
-				displayOptions: {
-					show: {
-						resource: ['embedding'],
-						operation: ['create'],
-					},
-				},
-				default: 'nvidia/nv-embed-v1',
-				required: true,
-				description: 'The embedding model to use',
-				placeholder: 'nvidia/nv-embed-v1',
-			},
-			{
-				displayName: 'Input',
-				name: 'input',
-				type: 'string',
-				typeOptions: {
-					rows: 4,
-				},
-				displayOptions: {
-					show: {
-						resource: ['embedding'],
-						operation: ['create'],
-					},
-				},
-				default: '',
-				required: true,
-				description: 'The text to create embeddings for',
-				placeholder: 'Enter text to embed',
 			},
 
 			// ==================== ADDITIONAL OPTIONS ====================
