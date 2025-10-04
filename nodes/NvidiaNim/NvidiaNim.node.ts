@@ -159,7 +159,7 @@ export class NvidiaNim implements INodeType {
 				},
 				default: 'meta/llama3-8b-instruct',
 				required: true,
-				description: 'The AI model to use. Common options: meta/llama3-8b-instruct, meta/llama3-70b-instruct',
+				description: 'The AI model to use. Common options: meta/llama3-8b-instruct, meta/llama3-70b-instruct.',
 				placeholder: 'meta/llama3-8b-instruct',
 			},
 			{
@@ -304,87 +304,85 @@ export class NvidiaNim implements INodeType {
 						resource: ['chat', 'completion'],
 					},
 				},
-				options: [
-					{
-						displayName: 'Max Tokens',
-						name: 'max_tokens',
-						type: 'number',
-						default: 100,
-						description: 'Maximum number of tokens to generate in the response',
-						typeOptions: {
-							minValue: 1,
-							maxValue: 4096,
-						},
+			options: [
+				{
+					displayName: 'Frequency Penalty',
+					name: 'frequency_penalty',
+					type: 'number',
+					typeOptions: {
+						minValue: -2,
+						maxValue: 2,
+						numberPrecision: 2,
 					},
-					{
-						displayName: 'Temperature',
-						name: 'temperature',
-						type: 'number',
-						typeOptions: {
-							minValue: 0,
-							maxValue: 2,
-							numberPrecision: 2,
-						},
-						default: 0.7,
-						description: 'Controls randomness. Lower = more focused, Higher = more creative (0-2)',
+					default: 0,
+					description: 'Reduces repetition. Positive values penalize frequent tokens (-2 to 2).',
+				},
+				{
+					displayName: 'Max Tokens',
+					name: 'max_tokens',
+					type: 'number',
+					default: 100,
+					description: 'Maximum number of tokens to generate in the response',
+					typeOptions: {
+						minValue: 1,
+						maxValue: 4096,
 					},
-					{
-						displayName: 'Top P',
-						name: 'top_p',
-						type: 'number',
-						typeOptions: {
-							minValue: 0,
-							maxValue: 1,
-							numberPrecision: 2,
-						},
-						default: 1,
-						description: 'Nucleus sampling parameter. Controls diversity of output (0-1)',
+				},
+				{
+					displayName: 'Presence Penalty',
+					name: 'presence_penalty',
+					type: 'number',
+					typeOptions: {
+						minValue: -2,
+						maxValue: 2,
+						numberPrecision: 2,
 					},
-					{
-						displayName: 'Frequency Penalty',
-						name: 'frequency_penalty',
-						type: 'number',
-						typeOptions: {
-							minValue: -2,
-							maxValue: 2,
-							numberPrecision: 2,
-						},
-						default: 0,
-						description: 'Reduces repetition. Positive values penalize frequent tokens (-2 to 2)',
+					default: 0,
+					description: 'Encourages new topics. Positive values penalize existing tokens (-2 to 2).',
+				},
+				{
+					displayName: 'Stop Sequences',
+					name: 'stop',
+					type: 'string',
+					default: '',
+					description: 'Comma-separated sequences where the API will stop generating (e.g., "\\n,END")',
+					placeholder: '\\n,END',
+				},
+				{
+					displayName: 'Stream',
+					name: 'stream',
+					type: 'boolean',
+					default: false,
+					description: 'Whether to stream the response (not fully supported in all contexts)',
+				},
+				{
+					displayName: 'Temperature',
+					name: 'temperature',
+					type: 'number',
+					typeOptions: {
+						minValue: 0,
+						maxValue: 2,
+						numberPrecision: 2,
 					},
-					{
-						displayName: 'Presence Penalty',
-						name: 'presence_penalty',
-						type: 'number',
-						typeOptions: {
-							minValue: -2,
-							maxValue: 2,
-							numberPrecision: 2,
-						},
-						default: 0,
-						description: 'Encourages new topics. Positive values penalize existing tokens (-2 to 2)',
+					default: 0.7,
+					description: 'Controls randomness. Lower = more focused, Higher = more creative (0-2).',
+				},
+				{
+					displayName: 'Top P',
+					name: 'top_p',
+					type: 'number',
+					typeOptions: {
+						minValue: 0,
+						maxValue: 1,
+						numberPrecision: 2,
 					},
-					{
-						displayName: 'Stop Sequences',
-						name: 'stop',
-						type: 'string',
-						default: '',
-						description: 'Comma-separated sequences where the API will stop generating (e.g., "\\n,END")',
-						placeholder: '\\n,END',
-					},
-					{
-						displayName: 'Stream',
-						name: 'stream',
-						type: 'boolean',
-						default: false,
-						description: 'Whether to stream the response (not fully supported in all contexts)',
-					},
-				],
-			},
-		],
-	};
-
-	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
+					default: 1,
+					description: 'Nucleus sampling parameter. Controls diversity of output (0-1).',
+				},
+			],
+		},
+	],
+};	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 		const items = this.getInputData();
 		const returnData: INodeExecutionData[] = [];
 		const resource = this.getNodeParameter('resource', 0) as string;
