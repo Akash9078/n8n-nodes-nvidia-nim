@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.3] - 2025-01-10
+
+### Performance Improvements
+- **Optimized additionalOptions handling**: Replaced multiple if statements with efficient loop using object mapping
+- **Reduced code duplication**: Cleaner, more maintainable code structure
+
+### Removed - Code Cleanup
+- **Redundant documentation files**: Removed 8 duplicate/outdated MD files (AI_AGENT_GUIDE.md, BUG_FIX_SUMMARY.md, FUNCTION_CALLING_GUIDE.md, INDEX.md, PROJECT_COMPLETE.md, PROJECT_OVERVIEW.md, SETUP_GUIDE.md, VISUAL_SUMMARY.md)
+- **Temporary scripts**: Removed fix-api-urls.ps1 and fix_urls.py (one-time utilities no longer needed)
+- **Backup files**: Removed NvidiaNim.node.ts.backup
+- **Unused files**: Removed NvidiaNim.node.json (not used by n8n)
+
+### Changed
+- **Updated README.md**: Replaced with v2 architecture documentation
+- **Smaller package size**: Reduced from 13.9 kB to ~10 kB by removing redundant files
+
 ## [2.0.2] - 2025-01-10
 
 ### Removed

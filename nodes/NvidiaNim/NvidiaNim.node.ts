@@ -265,18 +265,25 @@ export class NvidiaNim implements INodeType {
 				}
 
 				// Prepare request body
-				const body: any = {
-					model,
-					messages,
+				const body: any = { model, messages };
+
+				// Add additional options efficiently
+				const optionMappings: Record<string, string> = {
+					max_tokens: 'max_tokens',
+					temperature: 'temperature',
+					top_p: 'top_p',
+					frequency_penalty: 'frequency_penalty',
+					presence_penalty: 'presence_penalty',
+					stream: 'stream',
+				};
+
+				for (const [key, bodyKey] of Object.entries(optionMappings)) {
+					if (additionalOptions[key] !== undefined) {
+						body[bodyKey] = additionalOptions[key];
+					}
 				}
 
-				// Add additional options
-				if (additionalOptions.max_tokens) body.max_tokens = additionalOptions.max_tokens;
-				if (additionalOptions.temperature !== undefined) body.temperature = additionalOptions.temperature;
-				if (additionalOptions.top_p !== undefined) body.top_p = additionalOptions.top_p;
-				if (additionalOptions.frequency_penalty !== undefined) body.frequency_penalty = additionalOptions.frequency_penalty;
-				if (additionalOptions.presence_penalty !== undefined) body.presence_penalty = additionalOptions.presence_penalty;
-				if (additionalOptions.stream !== undefined) body.stream = additionalOptions.stream;
+				// Handle stop sequences specially
 				if (additionalOptions.stop) {
 					body.stop = additionalOptions.stop.split(',').map((s: string) => s.trim());
 				}

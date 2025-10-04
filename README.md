@@ -4,23 +4,38 @@
 ![npm version](https://img.shields.io/npm/v/n8n-nodes-nvidia-nim.svg)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 
-This is an n8n community node that integrates **NVIDIA NIM (NVIDIA Inference Microservices)** into your n8n workflows. It allows you to leverage NVIDIA's powerful AI models for chat completions, text generation, embeddings, and more.
+**Visual AI Agent Architecture for NVIDIA NIM** - Connect NVIDIA's powerful AI models to n8n's AI Agent ecosystem with drag-and-drop simplicity.
+
+## 🎨 v2.0 - Visual Sub-Node Architecture
+
+Version 2.0 introduces a complete architectural redesign following n8n's visual AI Agent pattern:
+
+```
+┌─────────────────────────────┐
+│  NVIDIA NIM Chat Model      │ ← Configure model
+└─────────────┬───────────────┘
+              │ ai_languageModel
+              ▼
+┌─────────────────────────────┐
+│  AI Agent (n8n built-in)    │ ← Visual connections
+├─ Memory (optional)          │
+├─ Tools (optional)           │
+└─────────────────────────────┘
+```
 
 ## 🚀 Features
 
-- **Chat Completions**: Create conversational AI experiences with context-aware responses
-- **Function Calling / Tool Use** ⭐ **NEW v1.1.0**: Build AI agents that can call external tools and functions
-- **Text Completions**: Generate text continuations from prompts
-- **Embeddings**: Convert text into vector embeddings for semantic search and similarity
-- **Model Management**: List and discover available NVIDIA AI models
-- **Full Parameter Control**: Fine-tune temperature, top-p, frequency/presence penalties, and more
-- **MCP Ready**: Foundation for Model Context Protocol integration
+- **🎨 Visual Sub-Node Architecture**: Drag-and-drop Chat Model connections
+- **🤖 n8n AI Agent Compatible**: Works with n8n's built-in AI Agent node
+- **🧠 Memory Support**: Connect any n8n Memory node (Window Buffer, Motorhead, etc.)
+- **🛠️ Tool Use**: Connect any n8n Tool node (Calculator, Code, HTTP Request, etc.)
+- **🔗 LangChain Integration**: Full LangChain ecosystem support
+- **⚡ Production Ready**: Battle-tested architecture following n8n patterns
+- **🔄 Modular**: Easily swap Chat Models in your workflows
 
 ## 📋 Prerequisites
 
-Before you begin, ensure you have:
-
-- **n8n** installed (version 0.200.0 or higher)
+- **n8n** version 1.0.0 or higher (with AI Agent support)
 - **Node.js** v18.17.0 or higher
 - **NVIDIA NGC API Key** - Get yours at [ngc.nvidia.com](https://ngc.nvidia.com)
 
@@ -40,264 +55,252 @@ Before you begin, ensure you have:
 npm install n8n-nodes-nvidia-nim
 ```
 
-### Option 3: Manual Installation
-
-```bash
-# Navigate to your n8n installation directory
-cd ~/.n8n/custom
-
-# Install the package
-npm install n8n-nodes-nvidia-nim
-```
-
 After installation, restart your n8n instance.
 
-## 🔧 Configuration
+## 🔧 Quick Start Guide
 
-### 1. Set up NVIDIA NIM Credentials
+### Step 1: Set up NVIDIA NIM Credentials
 
 1. In n8n, go to **Credentials** → **New**
 2. Search for **NVIDIA NIM API**
 3. Enter your credentials:
    - **API Key**: Your NVIDIA NGC API key
-   - **Base URL**: `https://integrate.api.nvidia.com/v1` (default)
+   - **Base URL**: `https://integrate.api.nvidia.com/v1`
 4. Click **Save**
 
-### 2. Add the Node to Your Workflow
+### Step 2: Build Your First AI Agent
 
-1. Create or open a workflow
-2. Click the **+** button to add a node
-3. Search for **NVIDIA NIM**
-4. Select the node and choose your credentials
+1. **Add Chat Trigger** (or Manual Trigger)
+   - Drag "When chat message received" onto canvas
+
+2. **Add NVIDIA NIM Chat Model**
+   - Search for "NVIDIA NIM Chat Model"
+   - Configure model: `meta/llama3-8b-instruct`
+   - Adjust temperature, max tokens if needed
+
+3. **Add AI Agent** (n8n built-in)
+   - Search for "AI Agent"
+   - Drag onto canvas
+
+4. **Connect them visually**
+   - Drag from Chat Model's output to AI Agent's "Chat Model" input
+   - You'll see a visual connection line
+
+5. **Test it!**
+   - Execute the workflow
+   - Ask a question in the chat
 
 ## 📖 Usage Examples
 
-### Example 1: Simple Chat Completion
+### Example 1: Basic Chat Agent
 
 ```
-Resource: Chat
-Operation: Create
-Model: meta/llama3-8b-instruct
-Messages:
-  - Role: system
-    Content: You are a helpful assistant
-  - Role: user
-    Content: What is machine learning?
+Workflow:
+├─ When chat message received
+├─ NVIDIA NIM Chat Model (meta/llama3-8b-instruct)
+├─ AI Agent
+└─ [Chat response sent back]
 ```
 
-### Example 2: Text Generation with Custom Parameters
+**Setup:**
+1. Add "When chat message received" trigger
+2. Add "NVIDIA NIM Chat Model" → Configure model
+3. Add "AI Agent"
+4. Connect: Chat Model → AI Agent (ai_languageModel connection)
+5. Connect: Trigger → AI Agent (main connection)
+
+**Result:** A basic conversational AI powered by NVIDIA NIM!
+
+### Example 2: Agent with Memory
 
 ```
-Resource: Completion
-Operation: Create
-Model: meta/llama3-70b-instruct
-Prompt: Write a product description for...
-Additional Options:
-  - Max Tokens: 200
-  - Temperature: 0.8
-  - Top P: 0.95
+Workflow:
+├─ When chat message received
+├─ NVIDIA NIM Chat Model (meta/llama3-70b-instruct)
+├─ Window Buffer Memory
+├─ AI Agent
+└─ [Remembers conversation history]
 ```
 
-### Example 3: Generate Embeddings
+**Setup:**
+1. Follow Example 1 setup
+2. Add "Window Buffer Memory" node
+3. Connect: Memory → AI Agent (ai_memory connection)
+4. Configure memory window size (default: 10 messages)
+
+**Result:** Agent remembers previous messages in the conversation!
+
+### Example 3: Agent with Tools
 
 ```
-Resource: Embedding
-Operation: Create
-Model: nvidia/nv-embed-v1
-Input: Transform this text into vector embeddings
+Workflow:
+├─ When chat message received
+├─ NVIDIA NIM Chat Model
+├─ Calculator Tool
+├─ Code Tool (JavaScript)
+├─ HTTP Request Tool
+├─ AI Agent
+└─ [Can perform calculations, run code, make API calls]
 ```
 
-### Example 4: Function Calling / Tool Use ⭐ NEW
+**Setup:**
+1. Follow Example 1 setup
+2. Add "Calculator" node (from AI Tools category)
+3. Add "Code Tool" node
+4. Add "HTTP Request Tool" node
+5. Connect all tools → AI Agent (ai_tool connections)
 
-Build AI agents that can call external functions:
+**Result:** Agent can use tools to solve complex tasks!
+
+### Example 4: Production Agent
 
 ```
-Resource: Chat
-Operation: Create
-Model: meta/llama3-8b-instruct
-Messages: [{"role": "user", "content": "What's the weather in Tokyo?"}]
-
-Tools:
-  - Function Name: get_current_weather
-  - Description: Get the current weather in a given location
-  - Parameters (JSON Schema):
-    {
-      "type": "object",
-      "properties": {
-        "location": {
-          "type": "string",
-          "description": "City and state, e.g. Tokyo, Japan"
-        },
-        "unit": {
-          "type": "string",
-          "enum": ["celsius", "fahrenheit"]
-        }
-      },
-      "required": ["location"]
-    }
-
-Tool Choice: auto
+Workflow:
+├─ When chat message received
+├─ NVIDIA NIM Chat Model (temperature: 0.7)
+├─ Motorhead Memory (persistent)
+├─ Calculator Tool
+├─ Code Tool
+├─ Your Custom Tool (n8n workflow as tool)
+├─ AI Agent (with system message)
+└─ [Full-featured production AI agent]
 ```
 
-The model will generate:
-```json
+**Configuration:**
+- **Chat Model**: Set appropriate temperature (0.3 for focused, 0.8 for creative)
+- **Memory**: Use Motorhead for persistent memory across sessions
+- **System Message** (in AI Agent): Define agent personality and rules
+- **Tools**: Add all necessary capabilities
+
+## 🎯 Available NVIDIA NIM Models
+
+### Text Generation Models
+- `meta/llama3-8b-instruct` - Fast, balanced (recommended)
+- `meta/llama3-70b-instruct` - Larger, more capable
+- `meta/llama3-405b-instruct` - Maximum capability
+- `mistralai/mixtral-8x7b-instruct-v0.1` - Great for coding
+- `mistralai/mistral-7b-instruct-v0.3` - Fast, efficient
+
+### Multimodal Models
+- `meta/llama-3.2-90b-vision-instruct` - Vision + text
+- `microsoft/phi-3-vision-128k-instruct` - Efficient vision
+
+### Embedding Models
+Use with Vector Store nodes:
+- `nvidia/nv-embed-v1` - General purpose
+- `nvidia/nv-embedqa-e5-v5` - Q&A optimized
+
+## 🔧 Configuration Options
+
+### Chat Model Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| Model | string | meta/llama3-8b-instruct | NVIDIA NIM model to use |
+| Temperature | number | 0.7 | Controls randomness (0.0-2.0) |
+| Max Tokens | number | 1024 | Maximum response length |
+| Top P | number | 1.0 | Nucleus sampling (0.0-1.0) |
+| Frequency Penalty | number | 0.0 | Reduces repetition (-2.0-2.0) |
+| Presence Penalty | number | 0.0 | Encourages new topics (-2.0-2.0) |
+| Timeout | number | 60000 | Request timeout (milliseconds) |
+
+## 🎨 Visual Connections Guide
+
+### Connection Types
+
+1. **ai_languageModel** (Chat Model → Agent)
+   - Required for all agents
+   - Provides the AI model's intelligence
+   - Yellow connection line in n8n
+
+2. **ai_memory** (Memory → Agent)
+   - Optional but recommended
+   - Enables conversation history
+   - Blue connection line
+
+3. **ai_tool** (Tools → Agent)
+   - Optional
+   - Gives agent capabilities
+   - Purple connection line
+
+4. **main** (Trigger → Agent)
+   - Standard workflow connection
+   - Passes input data
+   - Gray connection line
+
+## 🚨 Breaking Changes from v1.x
+
+### What Changed
+
+**v1.x (Old - Parameter-Based):**
+```typescript
+// Tools defined as parameters in node
 {
-  "tool_calls": [{
-    "function": {
-      "name": "get_current_weather",
-      "arguments": "{\"location\": \"Tokyo, Japan\", \"unit\": \"celsius\"}"
-    }
-  }]
+  tools: [
+    { name: "calculator", ... },
+    { name: "search", ... }
+  ]
 }
 ```
 
-**📘 See [FUNCTION_CALLING_GUIDE.md](./FUNCTION_CALLING_GUIDE.md) for complete documentation and examples.**
-
-### Example 5: List Available Models
-
+**v2.0 (New - Visual Sub-Nodes):**
 ```
-Resource: Model
-Operation: List
+Visual Canvas:
+NVIDIA NIM Chat Model → AI Agent ← Calculator Tool
+                                  ← Search Tool
 ```
 
-## 🎯 Available Resources
+### Migration Guide
 
-### Chat
-Create conversational AI responses with full conversation context and function calling capabilities.
+1. **Replace NVIDIA NIM Node** with "NVIDIA NIM Chat Model" sub-node
+2. **Add n8n AI Agent** (built-in node)
+3. **Connect Chat Model** → AI Agent (ai_languageModel)
+4. **Replace tool parameters** with actual Tool nodes
+5. **Connect Tools** → AI Agent (ai_tool)
+6. **Add Memory** if needed → AI Agent (ai_memory)
 
-**Operations:**
-- `Create`: Generate chat completions with message history
+Benefits:
+- ✅ Visual workflow - see data flow
+- ✅ Modular - swap models easily
+- ✅ Reusable - same tools for multiple agents
+- ✅ Debuggable - inspect connections
+- ✅ Standard - follows n8n patterns
 
-**Parameters:**
-- `Model`: AI model identifier (e.g., `meta/llama3-8b-instruct`)
-- `Messages`: Array of conversation messages with roles (system/user/assistant)
-- `Tools` ⭐ **NEW**: Define functions the model can call (name, description, JSON Schema parameters)
-- `Tool Choice` ⭐ **NEW**: Control tool usage (auto, none, required)
-- `Max Tokens`: Maximum response length
-- `Temperature`: Creativity control (0-2)
-- `Top P`: Nucleus sampling parameter
-- `Frequency Penalty`: Reduce repetition (-2 to 2)
-- `Presence Penalty`: Encourage new topics (-2 to 2)
+## 📚 Documentation
 
-### Completion
-Generate text continuations from prompts.
+- **[AI_AGENT_GUIDE.md](./AI_AGENT_GUIDE.md)**: Complete production guide
+  - Message roles and workflows
+  - Memory management best practices
+  - Tool design patterns
+  - Token optimization strategies
 
-**Operations:**
-- `Create`: Generate text completions
-
-**Parameters:**
-- `Model`: AI model identifier
-- `Prompt`: Text prompt to complete
-- Same additional options as Chat
-
-### Embedding
-Convert text into vector embeddings.
-
-**Operations:**
-- `Create`: Generate embeddings
-
-**Parameters:**
-- `Model`: Embedding model (e.g., `nvidia/nv-embed-v1`)
-- `Input`: Text to embed
-
-### Model
-Manage and discover models.
-
-**Operations:**
-- `List`: Get all available models
-
-## 🔑 Supported Models
-
-**Chat/Completion Models:**
-- `meta/llama3-8b-instruct` - Fast, efficient LLM
-- `meta/llama3-70b-instruct` - High-performance LLM
-- `mistralai/mixtral-8x7b-instruct-v0.1` - Mixture of Experts model
-- `google/gemma-7b` - Google's Gemma model
-
-**Embedding Models:**
-- `nvidia/nv-embed-v1` - NVIDIA's embedding model
-- `sentence-transformers/all-MiniLM-L6-v2` - Compact embeddings
-
-For the latest model list, use the **Model → List** operation.
-
-## 🛠️ Development
-
-### Building from Source
-
-```bash
-# Clone the repository
-git clone https://github.com/yourusername/n8n-nodes-nvidia-nim.git
-cd n8n-nodes-nvidia-nim
-
-# Install dependencies
-npm install
-
-# Build the project
-npm run build
-
-# Link for local development
-npm link
-```
-
-### Project Structure
-
-```
-n8n-nodes-nvidia-nim/
-├── credentials/
-│   └── NvidiaNimApi.credentials.ts
-├── nodes/
-│   └── NvidiaNim/
-│       ├── NvidiaNim.node.ts
-│       ├── NvidiaNim.node.json
-│       └── nvidia-nim.svg
-├── package.json
-├── tsconfig.json
-└── README.md
-```
+- **[CHANGELOG.md](./CHANGELOG.md)**: Version history and updates
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 📝 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License - see LICENSE file for details
 
-## 🐛 Issues & Support
+## 🔗 Links
 
-If you encounter any issues or have questions:
-
-1. Check the [documentation](https://docs.nvidia.com/nim/)
-2. Search [existing issues](https://github.com/yourusername/n8n-nodes-nvidia-nim/issues)
-3. Create a [new issue](https://github.com/yourusername/n8n-nodes-nvidia-nim/issues/new)
-
-## 🔗 Resources
-
-- [n8n Documentation](https://docs.n8n.io)
+- [GitHub Repository](https://github.com/Akash9078/n8n-nodes-nvidia-nim)
+- [npm Package](https://www.npmjs.com/package/n8n-nodes-nvidia-nim)
 - [NVIDIA NIM Documentation](https://docs.nvidia.com/nim/)
-- [NVIDIA NGC](https://ngc.nvidia.com)
-- [Community Node Development](https://docs.n8n.io/integrations/creating-nodes/)
+- [n8n Documentation](https://docs.n8n.io/)
 
-## 📊 Version History
+## 🙏 Acknowledgments
 
-See [CHANGELOG.md](CHANGELOG.md) for version history and updates.
-
-## 🌟 Show Your Support
-
-If this project helped you, please give it a ⭐️!
-
-## 👤 Author
-
-**Your Name**
-- GitHub: [@yourusername](https://github.com/yourusername)
-- Email: your.email@example.com
+- n8n team for the amazing workflow automation platform
+- NVIDIA for providing powerful AI models via NIM
+- LangChain community for the AI framework
 
 ---
 
-**Made with ❤️ for the n8n community**
+**Need Help?** Open an issue on [GitHub](https://github.com/Akash9078/n8n-nodes-nvidia-nim/issues)
+
+**Want to Contribute?** PRs welcome!
+
+Made with ❤️ by [Akash Kumar Naik](https://github.com/Akash9078)

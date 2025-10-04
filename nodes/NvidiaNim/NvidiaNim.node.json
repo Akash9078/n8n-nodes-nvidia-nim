@@ -1,8 +1,0 @@
-{
-	"nodes": [
-		"dist/nodes/NvidiaNim/NvidiaNim.node.js"
-	],
-	"credentials": [
-		"dist/credentials/NvidiaNimApi.credentials.js"
-	]
-}
