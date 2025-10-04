@@ -119,11 +119,6 @@ export class NvidiaNim implements INodeType {
 								type: 'options',
 								options: [
 									{
-										name: 'System',
-										value: 'system',
-										description: 'System instructions that guide the AI behavior',
-									},
-									{
 										name: 'User',
 										value: 'user',
 										description: 'User messages or questions',
@@ -212,6 +207,17 @@ export class NvidiaNim implements INodeType {
 					description: 'Whether to stream the response (not fully supported in all contexts)',
 				},
 				{
+					displayName: 'System Prompt',
+					name: 'system_prompt',
+					type: 'string',
+					typeOptions: {
+						rows: 3,
+					},
+					default: '',
+					description: 'System instructions to guide the AI behavior. Will be prepended to the first user message.',
+					placeholder: 'You are a helpful assistant...',
+				},
+				{
 					displayName: 'Temperature',
 					name: 'temperature',
 					type: 'number',
@@ -262,6 +268,14 @@ export class NvidiaNim implements INodeType {
 						'At least one message is required. Please add a message in the Messages field.',
 						{ itemIndex: i },
 					);
+				}
+
+				// Prepend system prompt to first user message if provided
+				if (additionalOptions.system_prompt) {
+					const firstUserIndex = messages.findIndex((msg: any) => msg.role === 'user');
+					if (firstUserIndex !== -1) {
+						messages[firstUserIndex].content = `${additionalOptions.system_prompt}\n\n${messages[firstUserIndex].content}`;
+					}
 				}
 
 				// Prepare request body
