@@ -527,16 +527,18 @@ export class NvidiaNim implements INodeType {
 			} catch (error) {
 				// Handle errors gracefully
 				if (this.continueOnFail()) {
+					const errorMessage = error instanceof Error ? error.message : String(error);
 					returnData.push({
 						json: {
-							error: error.message,
+							error: errorMessage,
 							item: i,
 						},
 						pairedItem: { item: i },
 					});
 					continue;
 				}
-				throw new NodeOperationError(this.getNode(), error, { itemIndex: i });
+				const errorObj = error instanceof Error ? error : new Error(String(error));
+				throw new NodeOperationError(this.getNode(), errorObj, { itemIndex: i });
 			}
 		}
 
