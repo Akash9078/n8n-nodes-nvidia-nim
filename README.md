@@ -9,10 +9,12 @@ This is an n8n community node that integrates **NVIDIA NIM (NVIDIA Inference Mic
 ## 🚀 Features
 
 - **Chat Completions**: Create conversational AI experiences with context-aware responses
+- **Function Calling / Tool Use** ⭐ **NEW v1.1.0**: Build AI agents that can call external tools and functions
 - **Text Completions**: Generate text continuations from prompts
 - **Embeddings**: Convert text into vector embeddings for semantic search and similarity
 - **Model Management**: List and discover available NVIDIA AI models
 - **Full Parameter Control**: Fine-tune temperature, top-p, frequency/presence penalties, and more
+- **MCP Ready**: Foundation for Model Context Protocol integration
 
 ## 📋 Prerequisites
 
@@ -105,7 +107,53 @@ Model: nvidia/nv-embed-v1
 Input: Transform this text into vector embeddings
 ```
 
-### Example 4: List Available Models
+### Example 4: Function Calling / Tool Use ⭐ NEW
+
+Build AI agents that can call external functions:
+
+```
+Resource: Chat
+Operation: Create
+Model: meta/llama3-8b-instruct
+Messages: [{"role": "user", "content": "What's the weather in Tokyo?"}]
+
+Tools:
+  - Function Name: get_current_weather
+  - Description: Get the current weather in a given location
+  - Parameters (JSON Schema):
+    {
+      "type": "object",
+      "properties": {
+        "location": {
+          "type": "string",
+          "description": "City and state, e.g. Tokyo, Japan"
+        },
+        "unit": {
+          "type": "string",
+          "enum": ["celsius", "fahrenheit"]
+        }
+      },
+      "required": ["location"]
+    }
+
+Tool Choice: auto
+```
+
+The model will generate:
+```json
+{
+  "tool_calls": [{
+    "function": {
+      "name": "get_current_weather",
+      "arguments": "{\"location\": \"Tokyo, Japan\", \"unit\": \"celsius\"}"
+    }
+  }]
+}
+```
+
+**📘 See [FUNCTION_CALLING_GUIDE.md](./FUNCTION_CALLING_GUIDE.md) for complete documentation and examples.**
+
+### Example 5: List Available Models
 
 ```
 Resource: Model
@@ -115,7 +163,7 @@ Operation: List
 ## 🎯 Available Resources
 
 ### Chat
-Create conversational AI responses with full conversation context.
+Create conversational AI responses with full conversation context and function calling capabilities.
 
 **Operations:**
 - `Create`: Generate chat completions with message history
@@ -123,6 +171,8 @@ Create conversational AI responses with full conversation context.
 **Parameters:**
 - `Model`: AI model identifier (e.g., `meta/llama3-8b-instruct`)
 - `Messages`: Array of conversation messages with roles (system/user/assistant)
+- `Tools` ⭐ **NEW**: Define functions the model can call (name, description, JSON Schema parameters)
+- `Tool Choice` ⭐ **NEW**: Control tool usage (auto, none, required)
 - `Max Tokens`: Maximum response length
 - `Temperature`: Creativity control (0-2)
 - `Top P`: Nucleus sampling parameter

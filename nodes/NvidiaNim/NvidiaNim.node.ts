@@ -197,11 +197,6 @@ export class NvidiaNim implements INodeType {
 										value: 'user',
 										description: 'User messages or questions',
 									},
-									{
-										name: 'Assistant',
-										value: 'assistant',
-										description: 'AI assistant responses (for context)',
-									},
 								],
 								default: 'user',
 								description: 'The role of the message sender',
@@ -220,6 +215,91 @@ export class NvidiaNim implements INodeType {
 						],
 					},
 				],
+			},
+			{
+				displayName: 'Tools',
+				name: 'tools',
+				type: 'fixedCollection',
+				typeOptions: {
+					multipleValues: true,
+				},
+				displayOptions: {
+					show: {
+						resource: ['chat'],
+						operation: ['create'],
+					},
+				},
+				default: {},
+				description: 'Functions that the model can call. Enables function calling/tool use capabilities.',
+				options: [
+					{
+						name: 'toolValues',
+						displayName: 'Tool',
+						values: [
+							{
+								displayName: 'Function Name',
+								name: 'name',
+								type: 'string',
+								default: '',
+								required: true,
+								description: 'The name of the function to call (e.g., get_weather)',
+								placeholder: 'get_current_weather',
+							},
+							{
+								displayName: 'Function Description',
+								name: 'description',
+								type: 'string',
+								typeOptions: {
+									rows: 2,
+								},
+								default: '',
+								required: true,
+								description: 'A description of what the function does',
+								placeholder: 'Get the current weather in a given location',
+							},
+							{
+								displayName: 'Parameters (JSON Schema)',
+								name: 'parameters',
+								type: 'json',
+								default: '{\n  "type": "object",\n  "properties": {\n    "location": {\n      "type": "string",\n      "description": "City and state, e.g. San Francisco, CA"\n    }\n  },\n  "required": ["location"]\n}',
+								description: 'JSON Schema describing the function parameters',
+								typeOptions: {
+									rows: 10,
+								},
+							},
+						],
+					},
+				],
+			},
+			{
+				displayName: 'Tool Choice',
+				name: 'tool_choice',
+				type: 'options',
+				displayOptions: {
+					show: {
+						resource: ['chat'],
+						operation: ['create'],
+					},
+				},
+				options: [
+					{
+						name: 'Auto',
+						value: 'auto',
+						description: 'Model decides whether to call functions',
+					},
+					{
+						name: 'None',
+						value: 'none',
+						description: 'Model will not call any functions',
+					},
+					{
+						name: 'Required',
+						value: 'required',
+						description: 'Model must call one or more functions',
+					},
+				],
+				default: 'auto',
+				description: 'Controls how the model responds to function calls',
 			},
 
 			// ==================== COMPLETION FIELDS ====================
@@ -398,6 +478,8 @@ export class NvidiaNim implements INodeType {
 					if (operation === 'create') {
 						const model = this.getNodeParameter('model', i) as string;
 						const messagesData = this.getNodeParameter('messages', i) as any;
+						const toolsData = this.getNodeParameter('tools', i, {}) as any;
+						const toolChoice = this.getNodeParameter('tool_choice', i, 'auto') as string;
 						const additionalOptions = this.getNodeParameter('additionalOptions', i, {}) as any;
 
 						// Build messages array
@@ -411,6 +493,36 @@ export class NvidiaNim implements INodeType {
 							model,
 							messages,
 						};
+
+						// Add tools if provided
+						if (toolsData.toolValues && toolsData.toolValues.length > 0) {
+							body.tools = toolsData.toolValues.map((tool: any) => {
+								let parameters;
+								try {
+									parameters = typeof tool.parameters === 'string' 
+										? JSON.parse(tool.parameters) 
+										: tool.parameters;
+								} catch (error) {
+									throw new NodeOperationError(
+										this.getNode(),
+										`Invalid JSON in parameters for tool "${tool.name}": ${(error as Error).message}`,
+										{ itemIndex: i },
+									);
+								}
+								
+								return {
+									type: 'function',
+									function: {
+										name: tool.name,
+										description: tool.description,
+										parameters,
+									},
+								};
+							});
+							
+							// Add tool_choice if tools are provided
+							body.tool_choice = toolChoice;
+						}
 
 						// Add additional options
 						if (additionalOptions.max_tokens) body.max_tokens = additionalOptions.max_tokens;

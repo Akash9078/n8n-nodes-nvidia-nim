@@ -5,7 +5,60 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.1] - 2025-10-04
+## [1.1.0] - 2025-01-10
+
+### Added - Function Calling / Tool Use Support 🚀
+- **NEW**: Function calling (tool use) capabilities for AI agents
+- **Tools Parameter**: Define custom functions the model can call
+- **Tool Choice Parameter**: Control how the model uses tools (auto, none, required)
+- **OpenAI-Compatible API**: Follows OpenAI function calling specification
+- **JSON Schema Support**: Define function parameters using standard JSON Schema
+- **Multi-Tool Support**: Model can choose from multiple available tools
+- **Tool Call Parsing**: Response includes structured tool_calls for execution
+- **MCP Ready**: Foundation for Model Context Protocol integration
+
+### Features
+- Add multiple tools/functions to a single chat request
+- Define function name, description, and parameters (JSON Schema)
+- Control tool usage with tool_choice: auto/none/required
+- Model intelligently decides when to call functions
+- Structured JSON output for tool calls
+- Support for parallel tool calls (model-dependent)
+- Full parameter validation and error handling
+
+### Documentation
+- Comprehensive FUNCTION_CALLING_GUIDE.md with:
+  - What is function calling and how it works
+  - Step-by-step setup instructions
+  - 4 detailed examples (weather, database, email, multi-function)
+  - Best practices for tool definitions
+  - n8n workflow patterns for processing tool calls
+  - JSON Schema reference
+  - Troubleshooting guide
+  - MCP integration guidance
+
+### Use Cases Enabled
+- 🤖 **AI Agents**: Build autonomous agents that can take actions
+- 🔍 **API Integration**: Models can query external APIs
+- 📊 **Data Access**: Enable natural language database queries
+- 📧 **Automation**: Send emails, notifications, create tickets
+- 🌐 **Web Actions**: Search, scrape, and interact with web services
+- 🧮 **Calculations**: Perform complex computations and analysis
+
+### Technical Details
+- Added `tools` parameter as fixedCollection (multiple tool definitions)
+- Added `tool_choice` parameter with options: auto, none, required
+- Tool definitions include: name, description, parameters (JSON Schema)
+- Request body includes tools array when defined
+- Response includes tool_calls array when model wants to use tools
+- Follows OpenAI ChatCompletionMessageToolCall specification
+
+### Compatibility
+- Works with NVIDIA NIM models supporting function calling
+- Compatible with Llama 3.1, 3.2, 4, Mistral, and other tool-enabled models
+- OpenAI-compatible API ensures broad model support
+
+## [1.0.1] - 2025-01-04
 
 ### Fixed
 - **CRITICAL**: Fixed "Invalid URL" error that prevented all API requests from working
