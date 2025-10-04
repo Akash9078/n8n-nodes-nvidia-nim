@@ -429,7 +429,8 @@ export class NvidiaNim implements INodeType {
 							'nvidiaNimApi',
 							{
 								method: 'POST',
-								url: '/chat/completions',
+					baseURL: (await this.getCredentials('nvidiaNimApi')).baseUrl as string,
+					url: '/chat/completions',
 								body,
 								json: true,
 							},
@@ -467,7 +468,8 @@ export class NvidiaNim implements INodeType {
 							'nvidiaNimApi',
 							{
 								method: 'POST',
-								url: '/completions',
+					baseURL: (await this.getCredentials('nvidiaNimApi')).baseUrl as string,
+					url: '/completions',
 								body,
 								json: true,
 							},
@@ -492,7 +494,8 @@ export class NvidiaNim implements INodeType {
 							'nvidiaNimApi',
 							{
 								method: 'POST',
-								url: '/embeddings',
+					baseURL: (await this.getCredentials('nvidiaNimApi')).baseUrl as string,
+					url: '/embeddings',
 								body,
 								json: true,
 							},
@@ -509,7 +512,8 @@ export class NvidiaNim implements INodeType {
 							'nvidiaNimApi',
 							{
 								method: 'GET',
-								url: '/models',
+					baseURL: (await this.getCredentials('nvidiaNimApi')).baseUrl as string,
+					url: '/models',
 								json: true,
 							},
 						);
