@@ -5,7 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0] - 2024-01-XX
+## [1.0.1] - 2025-10-04
+
+### Fixed
+- **CRITICAL**: Fixed "Invalid URL" error that prevented all API requests from working
+- Added `baseURL` parameter to all API calls (`requestWithAuthentication`)
+- Now properly retrieves base URL from credentials for each request
+- Affected endpoints: chat completions, text completions, embeddings, and model listing
+
+### Technical Details
+- All four API endpoints now include: `baseURL: (await this.getCredentials('nvidiaNimApi')).baseUrl as string`
+- This ensures proper URL construction: `https://integrate.api.nvidia.com/v1/chat/completions`
+- Users should update immediately if experiencing connection issues
+
+## [1.0.0] - 2025-10-04
 
 ### Added
 - Initial release of n8n-nodes-nvidia-nim
