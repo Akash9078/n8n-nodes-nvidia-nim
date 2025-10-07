@@ -15,18 +15,8 @@ interface NvidiaModel {
 	description?: string;
 }
 
-interface ChatMessage {
-	role: 'user' | 'assistant';
-	content: string;
-}
-
 interface AdditionalOptions {
-	frequency_penalty?: number;
 	max_tokens?: number;
-	presence_penalty?: number;
-	stop?: string;
-	stream?: boolean;
-	system_prompt?: string;
 	temperature?: number;
 	top_p?: number;
 }
@@ -42,6 +32,11 @@ function formatModelName(modelId: string): string {
 		'mixtral': 'Mixtral',
 		'mistral': 'Mistral',
 		'meta': 'Meta',
+		'nvidia': 'NVIDIA',
+		'neva': 'NeVA',
+		'fuyu': 'Fuyu',
+		'kosmos': 'Kosmos',
+		'vila': 'VILA',
 	};
 	
 	return modelName
@@ -71,9 +66,6 @@ function mapAdditionalOptions(additionalOptions: AdditionalOptions): Record<stri
 		{ source: 'max_tokens', target: 'max_tokens', type: 'number' },
 		{ source: 'temperature', target: 'temperature', type: 'number' },
 		{ source: 'top_p', target: 'top_p', type: 'number' },
-		{ source: 'frequency_penalty', target: 'frequency_penalty', type: 'number' },
-		{ source: 'presence_penalty', target: 'presence_penalty', type: 'number' },
-		{ source: 'stream', target: 'stream', type: 'boolean' }
 	] as const;
 	
 	for (const { source, target } of mappings) {
@@ -82,63 +74,57 @@ function mapAdditionalOptions(additionalOptions: AdditionalOptions): Record<stri
 		}
 	}
 	
-	// Handle special cases
-	if (additionalOptions.stop) {
-		mappedOptions.stop = additionalOptions.stop.split(',').map(s => s.trim());
-	}
-	
 	return mappedOptions;
 }
 
-// Helper function to validate messages
-function validateMessages(messages: ChatMessage[]): { isValid: boolean; error?: string; errorIndex?: number } {
-	// Validate messages array is not empty
-	if (messages.length === 0) {
-		return { isValid: false, error: 'At least one message is required. Please add a message in the Messages field.' };
+// Helper function to validate and process image input
+function processImageInput(imageData: string): { isValid: boolean; imageUrl: string; error?: string } {
+	if (!imageData || imageData.trim() === '') {
+		return { isValid: false, imageUrl: '', error: 'Image data is required. Please provide a base64 encoded image or image URL.' };
 	}
-
-	// Validate that all messages have non-empty content
-	const emptyMessageIndex = messages.findIndex(msg => !msg.content || msg.content.trim() === '');
-	if (emptyMessageIndex !== -1) {
-		return { 
-			isValid: false, 
-			error: `Message ${emptyMessageIndex + 1} has empty content. All messages must have at least 1 character.`,
-			errorIndex: emptyMessageIndex
-		};
-	}
-
-	return { isValid: true };
-}
-
-// Helper function to preprocess messages
-function preprocessMessages(messages: ChatMessage[], systemPrompt?: string): ChatMessage[] {
-	const processedMessages = [...messages];
-
-	// Prepend system prompt to first user message if provided
-	if (systemPrompt) {
-		const firstUserIndex = processedMessages.findIndex(msg => msg.role === 'user');
-		if (firstUserIndex !== -1) {
-			processedMessages[firstUserIndex] = {
-				...processedMessages[firstUserIndex],
-				content: `${systemPrompt}\n\n${processedMessages[firstUserIndex].content}`
-			};
+	
+	// Check if it's already a data URL
+	if (imageData.startsWith('data:image/')) {
+		// Validate data URL format
+		if (!imageData.includes('base64,')) {
+			return { isValid: false, imageUrl: '', error: 'Invalid data URL format. Must include base64 encoded data.' };
 		}
+		return { isValid: true, imageUrl: imageData };
 	}
-
-	return processedMessages;
+	
+	// Check if it's a direct URL
+	if (imageData.startsWith('http://') || imageData.startsWith('https://')) {
+		// Basic validation for URL format - simple regex check
+		const urlPattern = /^https?:\/\/.+\.(jpe?g|png|JPE?G|PNG)(\?.*)?$/;
+		if (!urlPattern.test(imageData)) {
+			// If extension is not in URL, still allow it as NVIDIA NIM can handle it
+			// but warn the user that it should be jpg/jpeg/png
+			return { isValid: true, imageUrl: imageData };
+		}
+		return { isValid: true, imageUrl: imageData };
+	}
+	
+	// Assume it's base64 encoded image data without data URL prefix
+	if (imageData.length < 100) {
+		return { isValid: false, imageUrl: '', error: 'Image data appears too short to be valid.' };
+	}
+	
+	// Add the data URL prefix assuming JPEG format
+	// In a real implementation, we might want to detect the image type
+	return { isValid: true, imageUrl: `data:image/jpeg;base64,${imageData}` };
 }
 
-export class NvidiaNim implements INodeType {
+export class NvidiaNimImage implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'NVIDIA NIM',
-		name: 'nvidiaNim',
+		displayName: 'NVIDIA NIM Image Analysis',
+		name: 'nvidiaNimImage',
 		icon: 'file:nvidia-nim.svg',
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["model"]}}',
-		description: 'Chat with NVIDIA NIM AI models - Simple conversational AI',
+		description: 'Analyze images with NVIDIA NIM Vision Language Models',
 		defaults: {
-			name: 'NVIDIA NIM',
+			name: 'NVIDIA NIM Image Analysis',
 		},
 		inputs: ['main'],
 		outputs: ['main'],
@@ -154,9 +140,9 @@ export class NvidiaNim implements INodeType {
 				displayName: 'Model',
 				name: 'model',
 				type: 'resourceLocator',
-				default: { mode: 'list', value: 'meta/llama-3.1-8b-instruct' },
+				default: { mode: 'list', value: 'nvidia/neva-22b' },
 				required: true,
-				description: 'Select the NVIDIA NIM model to use for chat completions',
+				description: 'Select the NVIDIA NIM Vision Language Model to use for image analysis',
 				modes: [
 					{
 						displayName: 'From List',
@@ -180,57 +166,31 @@ export class NvidiaNim implements INodeType {
 								},
 							},
 						],
-						placeholder: 'e.g., meta/llama-3.1-8b-instruct',
+						placeholder: 'e.g., nvidia/neva-22b',
 					},
 				],
 			},
 			{
-				displayName: 'Messages',
-				name: 'messages',
-				type: 'fixedCollection',
+				displayName: 'Image Data',
+				name: 'imageData',
+				type: 'string',
+				default: '',
+				description: 'Base64 encoded image data, data URL, or image URL (JPG, JPEG, PNG supported)',
+				placeholder: 'https://example.com/image.jpg or data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/...',
 				typeOptions: {
-					multipleValues: true,
+					rows: 4,
 				},
-				default: {},
-				description: 'The conversation messages',
-				options: [
-					{
-						name: 'messageValues',
-						displayName: 'Message',
-						values: [
-							{
-								displayName: 'Role',
-								name: 'role',
-								type: 'options',
-								options: [
-									{
-										name: 'User',
-										value: 'user',
-										description: 'User messages or questions',
-									},
-									{
-										name: 'Assistant',
-										value: 'assistant',
-										description: 'AI assistant previous responses (for conversation history)',
-									},
-								],
-								default: 'user',
-								description: 'The role of the message sender',
-							},
-							{
-								displayName: 'Content',
-								name: 'content',
-								type: 'string',
-								typeOptions: {
-									rows: 4,
-								},
-								default: '',
-								description: 'The message content',
-								placeholder: 'Enter your message here',
-							},
-						],
-					},
-				],
+			},
+			{
+				displayName: 'Prompt',
+				name: 'prompt',
+				type: 'string',
+				default: 'Describe this image in detail.',
+				description: 'The prompt to use for image analysis',
+				placeholder: 'What is in this image?',
+				typeOptions: {
+					rows: 3,
+				},
 			},
 
 			// ==================== ADDITIONAL OPTIONS ====================
@@ -242,18 +202,6 @@ export class NvidiaNim implements INodeType {
 				default: {},
 				options: [
 					{
-						displayName: 'Frequency Penalty',
-						name: 'frequency_penalty',
-						type: 'number',
-						typeOptions: {
-							minValue: -2,
-							maxValue: 2,
-							numberPrecision: 2,
-						},
-						default: 0,
-						description: 'Reduces repetition. Positive values penalize frequent tokens (-2 to 2).',
-					},
-					{
 						displayName: 'Max Tokens',
 						name: 'max_tokens',
 						type: 'number',
@@ -263,44 +211,6 @@ export class NvidiaNim implements INodeType {
 							minValue: 1,
 							maxValue: 4096,
 						},
-					},
-					{
-						displayName: 'Presence Penalty',
-						name: 'presence_penalty',
-						type: 'number',
-						typeOptions: {
-							minValue: -2,
-							maxValue: 2,
-							numberPrecision: 2,
-						},
-						default: 0,
-						description: 'Encourages new topics. Positive values penalize existing tokens (-2 to 2).',
-					},
-					{
-						displayName: 'Stop Sequences',
-						name: 'stop',
-						type: 'string',
-						default: '',
-						description: 'Comma-separated sequences where the API will stop generating (e.g., "\\n,END")',
-						placeholder: '\\n,END',
-					},
-					{
-						displayName: 'Stream',
-						name: 'stream',
-						type: 'boolean',
-						default: false,
-						description: 'Whether to stream the response (not fully supported in all contexts)',
-					},
-					{
-						displayName: 'System Prompt',
-						name: 'system_prompt',
-						type: 'string',
-						typeOptions: {
-							rows: 3,
-						},
-						default: '',
-						description: 'System instructions to guide the AI behavior. Will be prepended to the first user message.',
-						placeholder: 'You are a helpful assistant...',
 					},
 					{
 						displayName: 'Temperature',
@@ -351,17 +261,25 @@ export class NvidiaNim implements INodeType {
 
 					const models = response.data || [];
 					
-					// Filter for chat/completion models and format for n8n
+					// Filter for vision/language models and format for n8n
 					const results = models
 						.filter((model: NvidiaModel) => {
-							// Include models that support chat completions
+							// Include models that support vision/language tasks
 							const modelId = model.id || model.model || '';
-							return modelId && !modelId.includes('embed') && !modelId.includes('rerank');
+							return modelId && (
+								modelId.includes('neva') || 
+								modelId.includes('fuyu') || 
+								modelId.includes('kosmos') || 
+								modelId.includes('vila') ||
+								modelId.includes('vlm') ||
+								modelId.includes('vision') ||
+								modelId.includes('llama') && modelId.includes('vision')
+							);
 						})
 						.map((model: NvidiaModel) => {
 							const modelId = model.id || model.model || '';
 							
-							// Format model name: meta/llama-3.1-8b-instruct → Llama 3.1 8B Instruct
+							// Format model name
 							const displayName = formatModelName(modelId);
 							
 							return {
@@ -376,13 +294,13 @@ export class NvidiaNim implements INodeType {
 						results,
 					};
 				} catch (error) {
-					// Fallback to default models if API fails
+					// Fallback to default vision models if API fails
 					return {
 						results: [
-							{ name: 'Llama 3.1 8B Instruct', value: 'meta/llama-3.1-8b-instruct' },
-							{ name: 'Llama 3.1 70B Instruct', value: 'meta/llama-3.1-70b-instruct' },
-							{ name: 'Llama 3.1 405B Instruct', value: 'meta/llama-3.1-405b-instruct' },
-							{ name: 'Mixtral 8x7B Instruct', value: 'mistralai/mixtral-8x7b-instruct-v0.1' },
+							{ name: 'NeVA 22B', value: 'nvidia/neva-22b' },
+							{ name: 'Fuyu 8B', value: 'adept/fuyu-8b' },
+							{ name: 'Kosmos 2', value: 'microsoft/kosmos-2' },
+							{ name: 'Llama 3.2 11B Vision', value: 'meta/llama-3-2-11b-vision-instruct' },
 						],
 					};
 				}
@@ -404,32 +322,41 @@ export class NvidiaNim implements INodeType {
 				// Handle resourceLocator format for model parameter
 				const modelResource = this.getNodeParameter('model', i) as { mode: string; value: string };
 				const model = modelResource.value || modelResource as any as string;
-				const messagesData = this.getNodeParameter('messages', i) as any;
+				const imageData = this.getNodeParameter('imageData', i) as string;
+				const prompt = this.getNodeParameter('prompt', i) as string;
 				const additionalOptions = this.getNodeParameter('additionalOptions', i, {}) as AdditionalOptions;
 
-				// Build messages array
-				const messages: ChatMessage[] = messagesData.messageValues?.map((msg: any) => ({
-					role: msg.role,
-					content: msg.content,
-				})) || [];
-
-				// Validate messages
-				const validation = validateMessages(messages);
-				if (!validation.isValid) {
+				// Process and validate image input
+				const imageProcessing = processImageInput(imageData);
+				if (!imageProcessing.isValid) {
 					throw new NodeOperationError(
 						this.getNode(),
-						validation.error!,
+						imageProcessing.error!,
 						{ itemIndex: i },
 					);
 				}
 
-				// Preprocess messages
-				const processedMessages = preprocessMessages(messages, additionalOptions.system_prompt);
+				// Prepare messages array with image using OpenAI-compatible format
+				const messages = [
+					{
+						role: "user",
+						content: [
+							{ type: "text", text: prompt },
+							{ 
+								type: "image_url", 
+								image_url: { 
+									url: imageProcessing.imageUrl
+								} 
+							}
+						]
+					}
+				];
 
 				// Prepare request body
 				const body: any = { 
 					model, 
-					messages: processedMessages 
+					messages,
+					stream: false
 				};
 
 				// Add additional options

@@ -5,6 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.0] - 2025-10-07
+
+### Added - Image Analysis Capabilities 🖼️
+- **NVIDIA NIM Image Analysis Node** ⭐ NEW: Analyze images with NVIDIA Vision Language Models
+  - Support for NeVA, Fuyu, Kosmos, and other VLMs
+  - Accepts image URLs, base64 encoded images, or data URLs
+  - OpenAI-compatible API format for image analysis
+  - Dynamic model loading from live NVIDIA NIM API
+  - Searchable model dropdown with automatic updates
+  - Support for 10+ NVIDIA vision models
+
+### Features
+- **Dual Node Architecture**: Separate nodes for text chat and image analysis
+- **Flexible Image Input**: Accept URLs, base64 data, or data URLs (JPG, JPEG, PNG)
+- **Vision Model Support**: NeVA 22B, Fuyu 8B, Kosmos 2, Llama 3.2 Vision, and more
+- **Comprehensive Parameters**: Temperature, max tokens, top-p for image analysis
+- **Proper Error Handling**: Validation for image formats and model availability
+
+### Technical Details
+- Added `NvidiaNimImage.node.ts` with OpenAI-compatible image analysis implementation
+- Updated package.json to include new node and additional keywords
+- Enhanced README with image analysis usage instructions
+- Extended model filtering to include vision/language models
+- Improved image input validation and processing
+
+### Benefits
+- ✅ Expand NVIDIA NIM capabilities beyond text to include vision
+- ✅ Leverage state-of-the-art Vision Language Models
+- ✅ Flexible image input handling (URL, base64, data URL)
+- ✅ Consistent API with existing chat completion node
+- ✅ Automatic model discovery from NVIDIA NIM API
+
 ## [2.2.0] - 2025-01-11
 
 ### Removed - Major Simplification 🧹

@@ -1,7 +1,7 @@
 {
 	"name": "n8n-nodes-nvidia-nim",
-	"version": "2.2.0",
-	"description": "n8n community node for NVIDIA NIM - Chat completions with NVIDIA AI models",
+	"version": "2.3.0",
+	"description": "n8n community node for NVIDIA NIM - Chat completions and image analysis with NVIDIA AI models",
 	"keywords": [
 		"n8n-community-node-package",
 		"n8n",
@@ -10,7 +10,10 @@
 		"ai",
 		"llm",
 		"chat",
-		"machine-learning"
+		"machine-learning",
+		"image-analysis",
+		"computer-vision",
+		"vision-language-model"
 	],
 	"license": "MIT",
 	"homepage": "https://github.com/Akash9078/n8n-nodes-nvidia-nim",
@@ -42,7 +45,8 @@
 			"dist/credentials/NvidiaNimApi.credentials.js"
 		],
 		"nodes": [
-			"dist/nodes/NvidiaNim/NvidiaNim.node.js"
+			"dist/nodes/NvidiaNim/NvidiaNim.node.js",
+			"dist/nodes/NvidiaNim/NvidiaNimImage.node.js"
 		]
 	},
 	"devDependencies": {

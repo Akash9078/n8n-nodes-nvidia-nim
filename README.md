@@ -10,7 +10,7 @@
 
 
 
-n8n community node for **NVIDIA NIM** - Chat completions with NVIDIA AI models.## 📦 Installation
+n8n community node for **NVIDIA NIM** - Chat completions and image analysis with NVIDIA AI models.## 📦 Installation
 
 
 
@@ -22,7 +22,10 @@ n8n community node for **NVIDIA NIM** - Chat completions with NVIDIA AI models.#
 
 - Searchable model dropdown with automatic updates
 
-- Support for 20+ NVIDIA models (Llama 3, Mistral, etc.)n8n community node for **NVIDIA NIM** (NVIDIA Inference Microservices) - Chat completions with NVIDIA AI models.
+- Support for 20+ NVIDIA models (Llama 3, Mistral, etc.)
+- Image analysis with Vision Language Models (NeVA, Fuyu, Kosmos, etc.)
+
+n8n community node for **NVIDIA NIM** (NVIDIA Inference Microservices) - Chat completions and image analysis with NVIDIA AI models.
 
 - Configurable parameters (temperature, max tokens, etc.)
 
@@ -64,7 +67,8 @@ In n8n: **Settings** → **Community Nodes** → Install `n8n-nodes-nvidia-nim`-
 
 3. Enter: `n8n-nodes-nvidia-nim`
 
-1. Add "NVIDIA NIM" node to workflow
+1. Add "NVIDIA NIM" node to workflow for text-based chat
+2. Add "NVIDIA NIM Image Analysis" node to workflow for image analysis
 
 2. Select model from dropdown (e.g., `meta/llama3-8b-instruct`)**Via npm**:
 
@@ -112,6 +116,13 @@ In n8n: **Settings** → **Community Nodes** → Install `n8n-nodes-nvidia-nim`-
 
 1. Add "NVIDIA NIM" node → Configure model (e.g., `meta/llama3-8b-instruct`)
 
+### Image Analysis Usage
+
+1. Add "NVIDIA NIM Image Analysis" node → Configure vision model (e.g., `nvidia/neva-22b`)
+2. Provide image data (URL, base64, or data URL) and analysis prompt
+3. Connect: Trigger → NVIDIA NIM Image Analysis (main)
+4. Execute workflow
+
 ## Resources2. Connect: Trigger → NVIDIA NIM (main)
 
 3. Execute workflow
@@ -135,12 +146,22 @@ MIT License - [Akash Kumar Naik](https://github.com/Akash9078)
 
 ## 🤖 Available Models
 
+### Text Models
+
 - `meta/llama3-8b-instruct` ⭐ (recommended)
 - `meta/llama3-70b-instruct`
 - `meta/llama3-405b-instruct`
 - `mistralai/mixtral-8x7b-instruct-v0.1`
 
 [View all models →](https://docs.nvidia.com/nim/)
+
+### Vision Models
+- `nvidia/neva-22b` ⭐ (recommended)
+- `adept/fuyu-8b`
+- `microsoft/kosmos-2`
+- `meta/llama-3-2-11b-vision-instruct`
+
+[View all vision models →](https://docs.nvidia.com/nim/)
 
 ## ⚙️ Configuration
 
