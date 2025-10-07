@@ -8,8 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.3.1] - 2025-10-07
 
 ### Changed - Model Restrictions for Image Analysis
-- **Restricted Vision Models**: Image analysis node now only supports Llama and Phi vision models
-- **Updated Model Filtering**: Removed support for NeVA, Fuyu, Kosmos, and other non-Llama/Phi models
+- **Restricted Vision Models**: Image analysis node now only supports Llama vision models
+- **Updated Model Filtering**: Removed support for Phi, NeVA, Fuyu, Kosmos, and other non-Llama models
 - **Fallback Models**: Updated fallback models to Llama 3.2 11B and 90B Vision
 - **Default Model**: Changed default model to Llama 3.2 11B Vision
 
@@ -18,6 +18,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated fallback model list in image analysis node
 - Updated documentation and README to reflect model changes
 - Updated default model value and placeholder text
+
+## [2.3.2] - 2025-10-07
+
+### Fixed - Model Selector Issue
+- **Resolved Model Loading**: Fixed issue where model selector was not populating in image analysis node
+- **Corrected Model IDs**: Fixed inconsistent model IDs that were causing selection failures
+- **Improved Filtering Logic**: Made model filtering case-insensitive for better matching
+- **Enhanced Error Handling**: Added better error messages when model loading fails
+
+### Technical Details
+- Fixed model ID mapping in `getModels` method for image analysis node
+- Updated regex patterns for model name matching
+- Added fallback mechanism for when API is unreachable
+- Improved credential handling for model fetching
 
 ## [2.3.0] - 2025-10-07
 

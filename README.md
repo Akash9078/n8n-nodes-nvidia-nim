@@ -156,9 +156,8 @@ MIT License - [Akash Kumar Naik](https://github.com/Akash9078)
 [View all models →](https://docs.nvidia.com/nim/)
 
 ### Vision Models
-- `meta/llama-3-2-11b-vision-instruct` ⭐ (recommended)
-- `meta/llama-3-2-90b-vision-instruct`
-- `microsoft/phi-3-vision-128k-instruct`
+- `meta/llama-3.2-11b-vision-instruct` ⭐ (recommended)
+- `meta/llama-3.2-90b-vision-instruct`
 
 [View all vision models →](https://docs.nvidia.com/nim/)
 
