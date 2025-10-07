@@ -1,6 +1,8 @@
 import {
 	IExecuteFunctions,
+	ILoadOptionsFunctions,
 	INodeExecutionData,
+	INodeListSearchResult,
 	INodeType,
 	INodeTypeDescription,
 	NodeOperationError,
@@ -31,73 +33,36 @@ export class NvidiaNim implements INodeType {
 			{
 				displayName: 'Model',
 				name: 'model',
-				type: 'options',
-				noDataExpression: true,
-				options: [
-					{
-						name: 'Gemma 2 27B Instruct',
-						value: 'google/gemma-2-27b-it',
-						description: 'Larger Google model',
-					},
-					{
-						name: 'Gemma 2 9B Instruct',
-						value: 'google/gemma-2-9b-it',
-						description: 'Google\'s efficient model',
-					},
-					{
-						name: 'Llama 3.1 405B Instruct',
-						value: 'meta/llama-3.1-405b-instruct',
-						description: 'Maximum capability and performance',
-					},
-					{
-						name: 'Llama 3.1 70B Instruct',
-						value: 'meta/llama-3.1-70b-instruct',
-						description: 'More capable, better reasoning',
-					},
-					{
-						name: 'Llama 3.1 8B Instruct',
-						value: 'meta/llama-3.1-8b-instruct',
-						description: 'Fast and efficient for most tasks',
-					},
-					{
-						name: 'Llama 3.2 3B Instruct',
-						value: 'meta/llama-3.2-3b-instruct',
-						description: 'Ultra-fast, lightweight model',
-					},
-					{
-						name: 'Llama 3.2 90B Vision Instruct',
-						value: 'meta/llama-3.2-90b-vision-instruct',
-						description: 'Multimodal: text + image understanding',
-					},
-					{
-						name: 'Mistral 7B Instruct v0.3',
-						value: 'mistralai/mistral-7b-instruct-v0.3',
-						description: 'Fast, efficient general purpose',
-					},
-					{
-						name: 'Mixtral 8x7B Instruct',
-						value: 'mistralai/mixtral-8x7b-instruct-v0.1',
-						description: 'Excellent for coding and technical tasks',
-					},
-					{
-						name: 'Nemotron 4 340B Instruct',
-						value: 'nvidia/nemotron-4-340b-instruct',
-						description: 'NVIDIA\'s most advanced model',
-					},
-					{
-						name: 'Phi-3 Mini 128K Instruct',
-						value: 'microsoft/phi-3-mini-128k-instruct',
-						description: 'Compact with long context (128K tokens)',
-					},
-					{
-						name: 'Phi-3 Vision 128K Instruct',
-						value: 'microsoft/phi-3-vision-128k-instruct',
-						description: 'Vision + text with long context',
-					},
-				],
-				default: 'meta/llama-3.1-8b-instruct',
+				type: 'resourceLocator',
+				default: { mode: 'list', value: 'meta/llama-3.1-8b-instruct' },
 				required: true,
 				description: 'Select the NVIDIA NIM model to use for chat completions',
+				modes: [
+					{
+						displayName: 'From List',
+						name: 'list',
+						type: 'list',
+						typeOptions: {
+							searchListMethod: 'getModels',
+							searchable: true,
+						},
+					},
+					{
+						displayName: 'By ID',
+						name: 'id',
+						type: 'string',
+						validation: [
+							{
+								type: 'regex',
+								properties: {
+									regex: '^[a-zA-Z0-9_-]+/[a-zA-Z0-9_.-]+$',
+									errorMessage: 'Model ID must be in format: owner/model-name',
+								},
+							},
+						],
+						placeholder: 'e.g., meta/llama-3.1-8b-instruct',
+					},
+				],
 			},
 			{
 				displayName: 'Messages',
@@ -244,14 +209,84 @@ export class NvidiaNim implements INodeType {
 			],
 		},
 	],
-};	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
+};
+
+	methods = {
+		listSearch: {
+			async getModels(this: ILoadOptionsFunctions): Promise<INodeListSearchResult> {
+				try {
+					const credentials = await this.getCredentials('nvidiaNimApi');
+					const baseUrl = credentials.baseUrl as string;
+					const apiKey = credentials.apiKey as string;
+
+					// Fetch available models from NVIDIA NIM API
+					const response = await this.helpers.httpRequest({
+						method: 'GET',
+						url: `${baseUrl}/models`,
+						headers: {
+							'Authorization': `Bearer ${apiKey}`,
+							'Content-Type': 'application/json',
+						},
+					});
+
+					const models = response.data || [];
+					
+					// Filter for chat/completion models and format for n8n
+					const results = models
+						.filter((model: any) => {
+							// Include models that support chat completions
+							const modelId = model.id || model.model || '';
+							return modelId && !modelId.includes('embed') && !modelId.includes('rerank');
+						})
+						.map((model: any) => {
+							const modelId = model.id || model.model || '';
+							
+							// Format model name: meta/llama-3.1-8b-instruct → Llama 3.1 8B Instruct
+							const parts = modelId.split('/');
+							const modelName = parts[parts.length - 1];
+							const displayName = modelName
+								.split('-')
+								.map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+								.join(' ')
+								.replace(/\d+b\b/gi, (match: string) => match.toUpperCase())
+								.replace(/\d+k\b/gi, (match: string) => match.toUpperCase());
+							
+							return {
+								name: displayName,
+								value: modelId,
+								description: model.description || `${displayName} model`,
+							};
+						})
+						.sort((a: any, b: any) => a.name.localeCompare(b.name));
+
+					return {
+						results,
+					};
+				} catch (error) {
+					// Fallback to default models if API fails
+					return {
+						results: [
+							{ name: 'Llama 3.1 8B Instruct', value: 'meta/llama-3.1-8b-instruct' },
+							{ name: 'Llama 3.1 70B Instruct', value: 'meta/llama-3.1-70b-instruct' },
+							{ name: 'Llama 3.1 405B Instruct', value: 'meta/llama-3.1-405b-instruct' },
+							{ name: 'Mixtral 8x7B Instruct', value: 'mistralai/mixtral-8x7b-instruct-v0.1' },
+						],
+					};
+				}
+			},
+		},
+	};
+
+	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 		const items = this.getInputData();
 		const returnData: INodeExecutionData[] = [];
 
 		// Process each input item
 		for (let i = 0; i < items.length; i++) {
 			try {
-				const model = this.getNodeParameter('model', i) as string;
+				// Handle resourceLocator format for model parameter
+				const modelResource = this.getNodeParameter('model', i) as { mode: string; value: string };
+				const model = modelResource.value || modelResource as any as string;
 				const messagesData = this.getNodeParameter('messages', i) as any;
 				const additionalOptions = this.getNodeParameter('additionalOptions', i, {}) as any;
 

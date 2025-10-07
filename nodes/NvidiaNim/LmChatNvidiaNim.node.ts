@@ -1,6 +1,8 @@
 import { ChatOpenAI, type ClientOptions } from '@langchain/openai';
 import {
 	NodeConnectionTypes,
+	type ILoadOptionsFunctions,
+	type INodeListSearchResult,
 	type INodeType,
 	type INodeTypeDescription,
 	type ISupplyDataFunctions,
@@ -54,11 +56,36 @@ export class LmChatNvidiaNim implements INodeType {
 			{
 				displayName: 'Model',
 				name: 'model',
-				type: 'string',
-				default: 'meta/llama3-8b-instruct',
+				type: 'resourceLocator',
+				default: { mode: 'list', value: 'meta/llama-3.1-8b-instruct' },
 				required: true,
-				description: 'The NVIDIA NIM model to use. Examples: meta/llama3-8b-instruct, meta/llama3-70b-instruct, mistralai/mixtral-8x7b-instruct-v0.1.',
-				placeholder: 'meta/llama3-8b-instruct',
+				description: 'Select the NVIDIA NIM model to use for chat completions',
+				modes: [
+					{
+						displayName: 'From List',
+						name: 'list',
+						type: 'list',
+						typeOptions: {
+							searchListMethod: 'getModels',
+							searchable: true,
+						},
+					},
+					{
+						displayName: 'By ID',
+						name: 'id',
+						type: 'string',
+						validation: [
+							{
+								type: 'regex',
+								properties: {
+									regex: '^[a-zA-Z0-9_-]+/[a-zA-Z0-9_.-]+$',
+									errorMessage: 'Model ID must be in format: owner/model-name',
+								},
+							},
+						],
+						placeholder: 'e.g., meta/llama-3.1-8b-instruct',
+					},
+				],
 			},
 			{
 				displayName: 'Options',
@@ -142,9 +169,77 @@ export class LmChatNvidiaNim implements INodeType {
 		],
 	};
 
+	methods = {
+		listSearch: {
+			async getModels(this: ILoadOptionsFunctions): Promise<INodeListSearchResult> {
+				try {
+					const credentials = await this.getCredentials('nvidiaNimApi');
+					const baseUrl = credentials.baseUrl as string;
+					const apiKey = credentials.apiKey as string;
+
+					// Fetch available models from NVIDIA NIM API
+					const response = await this.helpers.httpRequest({
+						method: 'GET',
+						url: `${baseUrl}/models`,
+						headers: {
+							'Authorization': `Bearer ${apiKey}`,
+							'Content-Type': 'application/json',
+						},
+					});
+
+					const models = response.data || [];
+					
+					// Filter for chat/completion models and format for n8n
+					const results = models
+						.filter((model: any) => {
+							// Include models that support chat completions
+							const modelId = model.id || model.model || '';
+							return modelId && !modelId.includes('embed') && !modelId.includes('rerank');
+						})
+						.map((model: any) => {
+							const modelId = model.id || model.model || '';
+							
+							// Format model name: meta/llama-3.1-8b-instruct → Llama 3.1 8B Instruct
+							const parts = modelId.split('/');
+							const modelName = parts[parts.length - 1];
+							const displayName = modelName
+								.split('-')
+								.map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+								.join(' ')
+								.replace(/\d+b\b/gi, (match: string) => match.toUpperCase())
+								.replace(/\d+k\b/gi, (match: string) => match.toUpperCase());
+							
+							return {
+								name: displayName,
+								value: modelId,
+								description: model.description || `${displayName} model`,
+							};
+						})
+						.sort((a: any, b: any) => a.name.localeCompare(b.name));
+
+					return {
+						results,
+					};
+				} catch (error) {
+					// Fallback to default models if API fails
+					return {
+						results: [
+							{ name: 'Llama 3.1 8B Instruct', value: 'meta/llama-3.1-8b-instruct' },
+							{ name: 'Llama 3.1 70B Instruct', value: 'meta/llama-3.1-70b-instruct' },
+							{ name: 'Llama 3.1 405B Instruct', value: 'meta/llama-3.1-405b-instruct' },
+							{ name: 'Mixtral 8x7B Instruct', value: 'mistralai/mixtral-8x7b-instruct-v0.1' },
+						],
+					};
+				}
+			},
+		},
+	};
+
 	async supplyData(this: ISupplyDataFunctions, itemIndex: number): Promise<SupplyData> {
 		const credentials = await this.getCredentials('nvidiaNimApi');
-		const model = this.getNodeParameter('model', itemIndex) as string;
+		// Handle resourceLocator format for model parameter
+		const modelResource = this.getNodeParameter('model', itemIndex) as { mode: string; value: string };
+		const model = modelResource.value || modelResource as any as string;
 		const options = this.getNodeParameter('options', itemIndex, {}) as Record<string, any>;
 
 		// Get base URL from credentials

@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.3] - 2025-01-11
+
+### Added - Dynamic Model Loading 🚀
+- **Dynamic Model Fetching**: Model selection now fetches available models from live NVIDIA NIM API
+- **No More Hardcoded Lists**: Models are automatically updated without package updates
+- **Searchable Dropdown**: New resourceLocator UI with search functionality
+- **Manual ID Entry**: Option to enter model IDs directly for new/unlisted models
+- **Smart Fallback**: Returns default models if API is unavailable
+- **Model Filtering**: Automatically excludes embedding and reranking models, shows only chat completions
+
+### Changed
+- **NvidiaNim Node**: Model parameter converted from static options to resourceLocator
+- **LmChatNvidiaNim Sub-Node**: Model parameter converted from string to resourceLocator
+- **Model Display Names**: Auto-formatted for better readability (e.g., "Llama 3.1 8B Instruct")
+
+### Technical Details
+- Added `methods.listSearch.getModels()` to both nodes
+- API endpoint: `GET {baseUrl}/models` with Bearer token authentication
+- Regex validation for manual model IDs: `^[a-zA-Z0-9_-]+/[a-zA-Z0-9_.-]+$`
+- Fallback models: llama-3.1 (8B, 70B, 405B), mixtral-8x7b
+- Model name formatting: Capitalizes words, handles "8B", "128K" special cases
+
+### Benefits
+- ✅ Always up-to-date model list
+- ✅ Better user experience with searchable dropdown
+- ✅ Flexibility to use new models immediately
+- ✅ Automatic filtering of irrelevant models
+- ✅ Graceful fallback if API is unavailable
+
 ## [2.1.2] - 2025-10-07
 
 ### Fixed - Package Loading Issue 🔧
