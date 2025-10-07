@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.1] - 2025-10-07
+
+### Changed - Model Restrictions for Image Analysis
+- **Restricted Vision Models**: Image analysis node now only supports Llama and Phi vision models
+- **Updated Model Filtering**: Removed support for NeVA, Fuyu, Kosmos, and other non-Llama/Phi models
+- **Fallback Models**: Updated fallback models to Llama 3.2 11B and 90B Vision
+- **Default Model**: Changed default model to Llama 3.2 11B Vision
+
+### Technical Details
+- Modified model filtering logic in `getModels` method
+- Updated fallback model list in image analysis node
+- Updated documentation and README to reflect model changes
+- Updated default model value and placeholder text
+
 ## [2.3.0] - 2025-10-07
 
 ### Added - Image Analysis Capabilities 🖼️
