@@ -156,10 +156,9 @@ MIT License - [Akash Kumar Naik](https://github.com/Akash9078)
 [View all models →](https://docs.nvidia.com/nim/)
 
 ### Vision Models
-- `nvidia/neva-22b` ⭐ (recommended)
-- `adept/fuyu-8b`
-- `microsoft/kosmos-2`
-- `meta/llama-3-2-11b-vision-instruct`
+- `meta/llama-3-2-11b-vision-instruct` ⭐ (recommended)
+- `meta/llama-3-2-90b-vision-instruct`
+- `microsoft/phi-3-vision-128k-instruct`
 
 [View all vision models →](https://docs.nvidia.com/nim/)
 

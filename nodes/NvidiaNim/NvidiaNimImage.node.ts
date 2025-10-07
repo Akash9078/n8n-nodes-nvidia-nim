@@ -37,6 +37,8 @@ function formatModelName(modelId: string): string {
 		'fuyu': 'Fuyu',
 		'kosmos': 'Kosmos',
 		'vila': 'VILA',
+		'phi': 'Phi',
+		'microsoft': 'Microsoft',
 	};
 	
 	return modelName
@@ -140,7 +142,7 @@ export class NvidiaNimImage implements INodeType {
 				displayName: 'Model',
 				name: 'model',
 				type: 'resourceLocator',
-				default: { mode: 'list', value: 'nvidia/neva-22b' },
+				default: { mode: 'list', value: 'meta/llama-3-2-11b-vision-instruct' },
 				required: true,
 				description: 'Select the NVIDIA NIM Vision Language Model to use for image analysis',
 				modes: [
@@ -166,7 +168,7 @@ export class NvidiaNimImage implements INodeType {
 								},
 							},
 						],
-						placeholder: 'e.g., nvidia/neva-22b',
+						placeholder: 'e.g., meta/llama-3-2-11b-vision-instruct',
 					},
 				],
 			},
@@ -262,18 +264,14 @@ export class NvidiaNimImage implements INodeType {
 					const models = response.data || [];
 					
 					// Filter for vision/language models and format for n8n
+					// Only include Llama and Phi models for image analysis
 					const results = models
 						.filter((model: NvidiaModel) => {
-							// Include models that support vision/language tasks
+							// Include only Llama and Phi models that support vision tasks
 							const modelId = model.id || model.model || '';
 							return modelId && (
-								modelId.includes('neva') || 
-								modelId.includes('fuyu') || 
-								modelId.includes('kosmos') || 
-								modelId.includes('vila') ||
-								modelId.includes('vlm') ||
-								modelId.includes('vision') ||
-								modelId.includes('llama') && modelId.includes('vision')
+								modelId.includes('llama') && modelId.includes('vision') ||
+								modelId.includes('phi') && modelId.includes('vision')
 							);
 						})
 						.map((model: NvidiaModel) => {
@@ -295,12 +293,11 @@ export class NvidiaNimImage implements INodeType {
 					};
 				} catch (error) {
 					// Fallback to default vision models if API fails
+					// Only include Llama and Phi models
 					return {
 						results: [
-							{ name: 'NeVA 22B', value: 'nvidia/neva-22b' },
-							{ name: 'Fuyu 8B', value: 'adept/fuyu-8b' },
-							{ name: 'Kosmos 2', value: 'microsoft/kosmos-2' },
 							{ name: 'Llama 3.2 11B Vision', value: 'meta/llama-3-2-11b-vision-instruct' },
+							{ name: 'Llama 3.2 90B Vision', value: 'meta/llama-3-2-90b-vision-instruct' },
 						],
 					};
 				}

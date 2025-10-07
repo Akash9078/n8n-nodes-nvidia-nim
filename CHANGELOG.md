@@ -9,17 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added - Image Analysis Capabilities 🖼️
 - **NVIDIA NIM Image Analysis Node** ⭐ NEW: Analyze images with NVIDIA Vision Language Models
-  - Support for NeVA, Fuyu, Kosmos, and other VLMs
+  - Support for Llama and Phi vision models
   - Accepts image URLs, base64 encoded images, or data URLs
   - OpenAI-compatible API format for image analysis
   - Dynamic model loading from live NVIDIA NIM API
   - Searchable model dropdown with automatic updates
-  - Support for 10+ NVIDIA vision models
+  - Support for Llama and Phi vision models
 
 ### Features
 - **Dual Node Architecture**: Separate nodes for text chat and image analysis
 - **Flexible Image Input**: Accept URLs, base64 data, or data URLs (JPG, JPEG, PNG)
-- **Vision Model Support**: NeVA 22B, Fuyu 8B, Kosmos 2, Llama 3.2 Vision, and more
+- **Vision Model Support**: Llama 3.2 Vision and Phi Vision models
 - **Comprehensive Parameters**: Temperature, max tokens, top-p for image analysis
 - **Proper Error Handling**: Validation for image formats and model availability
 
@@ -32,7 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Benefits
 - ✅ Expand NVIDIA NIM capabilities beyond text to include vision
-- ✅ Leverage state-of-the-art Vision Language Models
+- ✅ Focus on Llama and Phi models for image analysis
 - ✅ Flexible image input handling (URL, base64, data URL)
 - ✅ Consistent API with existing chat completion node
 - ✅ Automatic model discovery from NVIDIA NIM API
