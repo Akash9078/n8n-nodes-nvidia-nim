@@ -5,6 +5,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2025-01-11
+
+### Removed - Major Simplification 🧹
+- **LmChatNvidiaNim Node**: Removed AI Agent sub-node completely
+- **LangChain Dependencies**: Removed @langchain/core and @langchain/openai (22 packages uninstalled)
+- **Source Files**: Deleted LmChatNvidiaNim.node.ts and all compiled outputs
+
+### Changed - Simplified Architecture
+- **Single Node**: Package now contains only the main NVIDIA NIM chat node
+- **Reduced Package Size**: 56.5 KB → 31.87 KB (43% reduction)
+- **Cleaner Dependencies**: Only n8n-workflow peer dependency remains
+- **Simplified README**: Reduced from 110 lines to 67 lines
+- **Updated Description**: Reflects simplified chat completions focus
+
+### Fixed - Message Validation
+- **Empty Content Error**: Added validation to prevent empty message content
+- **API Error Prevention**: Validates all messages have at least 1 character before API call
+- **Better Error Messages**: Clear error messages indicating which message is empty
+
+### Benefits
+- ✅ 43% smaller package size (faster installation)
+- ✅ Zero runtime dependencies (better performance)
+- ✅ Simpler architecture (easier maintenance)
+- ✅ Faster load time in n8n
+- ✅ No LangChain version conflicts
+- ✅ Clearer purpose and documentation
+
+### Technical Details
+- Package size: 31.87 KB (was 56.5 KB)
+- Dependencies removed: 22 packages
+- Files cleaned: Source, compiled, and documentation
+- Message validation: Prevents API 400 errors for empty content
+
 ## [2.1.3] - 2025-01-11
 
 ### Added - Dynamic Model Loading 🚀

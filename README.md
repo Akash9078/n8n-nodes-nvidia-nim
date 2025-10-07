@@ -1,103 +1,144 @@
-# n8n-nodes-nvidia-nim
+# n8n-nodes-nvidia-nim# n8n-nodes-nvi## 📋 Requirements
 
-![n8n.io - Workflow Automation](https://img.shields.io/badge/n8n-workflow%20automation-FF6D5A.svg)
+
+
+![n8n.io - Workflow Automation](https://img.shields.io/badge/n8n-workflow%20automation-FF6D5A.svg)- n8n v1.0.0+
+
+![npm version](https://img.shields.io/npm/v/n8n-nodes-nvidia-nim.svg)- Node.js v18.17.0+
+
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)- NVIDIA NGC API Key ([Get one here](https://ngc.nvidia.com))
+
+
+
+n8n community node for **NVIDIA NIM** - Chat completions with NVIDIA AI models.## 📦 Installation
+
+
+
+## FeaturesIn n8n: **Settings** → **Community Nodes** → Install `n8n-nodes-nvidia-nim` - Workflow Automation](https://img.shields.io/badge/n8n-workflow%20automation-FF6D5A.svg)
+
 ![npm version](https://img.shields.io/npm/v/n8n-nodes-nvidia-nim.svg)
-![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 
-n8n community node to integrate **NVIDIA NIM** (NVIDIA Inference Microservices) with n8n's AI Agent ecosystem.
+- Dynamic model loading from NVIDIA NIM API![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 
-> **Latest: v2.1.2** - Fixed package loading issue. See [CHANGELOG](./CHANGELOG.md) for details.
+- Searchable model dropdown with automatic updates
 
-## 📦 What's Included
+- Support for 20+ NVIDIA models (Llama 3, Mistral, etc.)n8n community node for **NVIDIA NIM** (NVIDIA Inference Microservices) - Chat completions with NVIDIA AI models.
 
-This package provides:
-
-1. **NVIDIA NIM Chat Model** (Sub-node) - Connect to n8n's AI Agent
-2. **NVIDIA NIM** (Legacy) - Simple chat completions
+- Configurable parameters (temperature, max tokens, etc.)
 
 ## ✨ Features
 
-- Visual AI Agent architecture with drag-and-drop connections
-- Compatible with n8n's built-in AI Agent, Memory, and Tool nodes
-- LangChain integration via sub-node pattern
-- Support for 20+ NVIDIA NIM models (Llama 3, Mistral, etc.)
-- Streaming support and comprehensive error handling
+## Requirements
 
-## 📋 Prerequisites
+- Dynamic model loading from NVIDIA NIM API
 
-- **n8n** version 1.0.0 or higher (with AI Agent support)
+- n8n v1.0.0+- Support for 20+ NVIDIA NIM models (Llama 3, Mistral, etc.)
+
+- Node.js v18.17.0+- Searchable model dropdown with automatic updates
+
+- [NVIDIA NGC API Key](https://ngc.nvidia.com)- Streaming support and comprehensive error handling
+
+
+
+## Installation## 📋 Prerequisites
+
+
+
+In n8n: **Settings** → **Community Nodes** → Install `n8n-nodes-nvidia-nim`- **n8n** version 1.0.0 or higher (with AI Agent support)
+
 - **Node.js** v18.17.0 or higher
-- **NVIDIA NGC API Key** - Get yours at [ngc.nvidia.com](https://ngc.nvidia.com)
 
-## � Installation
+## Setup- **NVIDIA NGC API Key** - Get yours at [ngc.nvidia.com](https://ngc.nvidia.com)
 
-**Via n8n Community Nodes** (Recommended):
+
+
+1. Get API Key at [ngc.nvidia.com](https://ngc.nvidia.com)## � Installation
+
+2. In n8n: **Credentials** → **New** → **NVIDIA NIM API**
+
+3. Enter API Key and Base URL: `https://integrate.api.nvidia.com/v1`**Via n8n Community Nodes** (Recommended):
+
 1. Go to **Settings** → **Community Nodes**
-2. Click **Install**
+
+## Usage2. Click **Install**
+
 3. Enter: `n8n-nodes-nvidia-nim`
 
-**Via npm**:
-```bash
-npm install n8n-nodes-nvidia-nim
-```
+1. Add "NVIDIA NIM" node to workflow
 
-Restart n8n after installation.
+2. Select model from dropdown (e.g., `meta/llama3-8b-instruct`)**Via npm**:
 
-## ⚙️ Setup
+3. Add messages (user/assistant roles)```bash
 
-1. **Get NVIDIA API Key**: [ngc.nvidia.com](https://ngc.nvidia.com)
-2. **Add Credentials** in n8n:
-   - Go to **Credentials** → **New**
+4. Configure optional parametersnpm install n8n-nodes-nvidia-nim
+
+5. Execute```
+
+
+
+## Available ModelsRestart n8n after installation.
+
+
+
+- `meta/llama3-8b-instruct` (recommended)## ⚙️ Setup
+
+- `meta/llama3-70b-instruct`
+
+- `meta/llama3-405b-instruct`1. **Get NVIDIA API Key**: [ngc.nvidia.com](https://ngc.nvidia.com)
+
+- `mistralai/mixtral-8x7b-instruct-v0.1`2. **Add Credentials** in n8n:
+
+- [View all models →](https://docs.nvidia.com/nim/)   - Go to **Credentials** → **New**
+
    - Select **NVIDIA NIM API**
-   - Enter API Key and Base URL: `https://integrate.api.nvidia.com/v1`
 
-## 🎯 Basic Usage
+## Configuration   - Enter API Key and Base URL: `https://integrate.api.nvidia.com/v1`
 
-```
-Manual Trigger → AI Agent (n8n built-in)
-                    ↑
-         NVIDIA NIM Chat Model
-```
 
-**Steps**:
-1. Add "NVIDIA NIM Chat Model" node → Configure model (e.g., `meta/llama3-8b-instruct`)
-2. Add "AI Agent" (n8n built-in)
-3. Connect: Chat Model → AI Agent (ai_languageModel)
-4. Connect: Trigger → AI Agent (main)
-5. Execute workflow
 
-## � Common Patterns
+**Key Parameters:**## 🎯 Basic Usage
 
-**With Memory** (conversation history):
-```
-Add "Window Buffer Memory" → Connect to AI Agent (ai_memory)
-```
+- Model: Choose from searchable dropdown
 
-**With Tools** (Calculator, Code, HTTP, etc.):
-```
-Add Tool nodes → Connect to AI Agent (ai_tool)
-```
+- Temperature: 0.0-2.0 (default: 0.7)```
+
+- Max Tokens: Response length (default: 100)Manual Trigger → NVIDIA NIM
+
+- Top P: Nucleus sampling (default: 1.0)```
+
+- System Prompt: Guide AI behavior
+
+- Frequency/Presence Penalty: Control repetition**Steps**:
+
+1. Add "NVIDIA NIM" node → Configure model (e.g., `meta/llama3-8b-instruct`)
+
+## Resources2. Connect: Trigger → NVIDIA NIM (main)
+
+3. Execute workflow
+
+- [CHANGELOG](./CHANGELOG.md)
+
+- [GitHub](https://github.com/Akash9078/n8n-nodes-nvidia-nim)## � Common Patterns
+
+- [npm](https://www.npmjs.com/package/n8n-nodes-nvidia-nim)
+
+- [NVIDIA NIM Docs](https://docs.nvidia.com/nim/)
 
 **Production Setup**:
-- Use larger models: `meta/llama3-405b-instruct`
-- Add persistent memory: Motorhead or Redis
+
+## License- Use larger models: `meta/llama3-405b-instruct`
+
 - Configure timeout and error handling
+
+MIT License - [Akash Kumar Naik](https://github.com/Akash9078)
+
 
 ## 🤖 Available Models
 
-**Text Generation**:
 - `meta/llama3-8b-instruct` ⭐ (recommended)
 - `meta/llama3-70b-instruct`
 - `meta/llama3-405b-instruct`
 - `mistralai/mixtral-8x7b-instruct-v0.1`
-
-**Vision**:
-- `meta/llama-3.2-90b-vision-instruct`
-- `microsoft/phi-3-vision-128k-instruct`
-
-**Embeddings**:
-- `nvidia/nv-embed-v1`
-- `nvidia/nv-embedqa-e5-v5`
 
 [View all models →](https://docs.nvidia.com/nim/)
 

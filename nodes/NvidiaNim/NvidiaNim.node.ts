@@ -305,6 +305,16 @@ export class NvidiaNim implements INodeType {
 					);
 				}
 
+				// Validate that all messages have non-empty content
+				const emptyMessageIndex = messages.findIndex((msg: any) => !msg.content || msg.content.trim() === '');
+				if (emptyMessageIndex !== -1) {
+					throw new NodeOperationError(
+						this.getNode(),
+						`Message ${emptyMessageIndex + 1} has empty content. All messages must have at least 1 character.`,
+						{ itemIndex: i },
+					);
+				}
+
 				// Prepend system prompt to first user message if provided
 				if (additionalOptions.system_prompt) {
 					const firstUserIndex = messages.findIndex((msg: any) => msg.role === 'user');

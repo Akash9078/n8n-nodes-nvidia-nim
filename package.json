@@ -1,7 +1,7 @@
 {
 	"name": "n8n-nodes-nvidia-nim",
-	"version": "2.1.3",
-	"description": "n8n community node for NVIDIA NIM - Chat Model sub-node for n8n's AI Agent with LangChain integration",
+	"version": "2.2.0",
+	"description": "n8n community node for NVIDIA NIM - Chat completions with NVIDIA AI models",
 	"keywords": [
 		"n8n-community-node-package",
 		"n8n",
@@ -10,10 +10,7 @@
 		"ai",
 		"llm",
 		"chat",
-		"embeddings",
-		"machine-learning",
-		"langchain",
-		"ai-agent"
+		"machine-learning"
 	],
 	"license": "MIT",
 	"homepage": "https://github.com/Akash9078/n8n-nodes-nvidia-nim",
@@ -45,8 +42,7 @@
 			"dist/credentials/NvidiaNimApi.credentials.js"
 		],
 		"nodes": [
-			"dist/nodes/NvidiaNim/NvidiaNim.node.js",
-			"dist/nodes/NvidiaNim/LmChatNvidiaNim.node.js"
+			"dist/nodes/NvidiaNim/NvidiaNim.node.js"
 		]
 	},
 	"devDependencies": {
@@ -60,9 +56,5 @@
 	},
 	"peerDependencies": {
 		"n8n-workflow": "*"
-	},
-	"dependencies": {
-		"@langchain/core": "^0.3.78",
-		"@langchain/openai": "^0.6.14"
 	}
 }
