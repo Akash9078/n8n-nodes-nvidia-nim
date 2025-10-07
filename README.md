@@ -6,7 +6,7 @@
 
 n8n community node to integrate **NVIDIA NIM** (NVIDIA Inference Microservices) with n8n's AI Agent ecosystem.
 
-> **Latest: v2.1.1** - Optimized package. See [CHANGELOG](./CHANGELOG.md) for details.
+> **Latest: v2.1.2** - Fixed package loading issue. See [CHANGELOG](./CHANGELOG.md) for details.
 
 ## 📦 What's Included
 

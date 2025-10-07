@@ -5,7 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.1.1] - 2025-10-07
+## [2.1.2] - 2025-10-07
+
+### Fixed - Package Loading Issue 🔧
+- **CRITICAL**: Removed `"main": "index.js"` from package.json
+- **Root Cause**: n8n community nodes don't need a main entry point, this was causing "Class could not be found" error
+- **Solution**: Removed unnecessary main field, n8n loads nodes directly from the `n8n.nodes` configuration
+
+## [2.1.1] - 2025-10-07 ⚠️ Still had loading issue
 
 ### Fixed - Package Loading Issue 🔧
 - **CRITICAL**: Removed NVIDIA NIM AI Agent node from package distribution
