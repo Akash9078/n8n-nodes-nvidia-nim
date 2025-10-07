@@ -19,6 +19,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated documentation and README to reflect model changes
 - Updated default model value and placeholder text
 
+## [2.3.3] - 2025-10-07
+
+### Changed - Code and Documentation Improvements
+- **Simplified Code Comments**: Removed verbose logging and comments for better readability
+- **Improved README**: Streamlined documentation for better user experience
+- **Maintained Functionality**: All features preserved while improving code clarity
 ## [2.3.2] - 2025-10-07
 
 ### Fixed - Model Selector Issue
