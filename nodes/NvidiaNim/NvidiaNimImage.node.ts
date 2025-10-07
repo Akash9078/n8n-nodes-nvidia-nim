@@ -78,28 +78,25 @@ function mapAdditionalOptions(additionalOptions: AdditionalOptions): Record<stri
 	return mappedOptions;
 }
 
-// Helper function to validate and process image input
+// Validate and process image input
 function processImageInput(imageData: string): { isValid: boolean; imageUrl: string; error?: string } {
 	if (!imageData || imageData.trim() === '') {
-		return { isValid: false, imageUrl: '', error: 'Image data is required. Please provide a base64 encoded image or image URL.' };
+		return { isValid: false, imageUrl: '', error: 'Image data is required.' };
 	}
 	
 	// Check if it's already a data URL
 	if (imageData.startsWith('data:image/')) {
-		// Validate data URL format
 		if (!imageData.includes('base64,')) {
-			return { isValid: false, imageUrl: '', error: 'Invalid data URL format. Must include base64 encoded data.' };
+			return { isValid: false, imageUrl: '', error: 'Invalid data URL format.' };
 		}
 		return { isValid: true, imageUrl: imageData };
 	}
 	
 	// Check if it's a direct URL
 	if (imageData.startsWith('http://') || imageData.startsWith('https://')) {
-		// Basic validation for URL format - simple regex check
 		const urlPattern = /^https?:\/\/.+\.(jpe?g|png|JPE?G|PNG)(\?.*)?$/;
 		if (!urlPattern.test(imageData)) {
-			// If extension is not in URL, still allow it as NVIDIA NIM can handle it
-			// but warn the user that it should be jpg/jpeg/png
+			// Allow URLs without extensions as NVIDIA NIM can handle them
 			return { isValid: true, imageUrl: imageData };
 		}
 		return { isValid: true, imageUrl: imageData };
@@ -111,7 +108,6 @@ function processImageInput(imageData: string): { isValid: boolean; imageUrl: str
 	}
 	
 	// Add the data URL prefix assuming JPEG format
-	// In a real implementation, we might want to detect the image type
 	return { isValid: true, imageUrl: `data:image/jpeg;base64,${imageData}` };
 }
 
