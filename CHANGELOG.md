@@ -5,7 +5,74 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.1.0] - 2025-10-07
+## [2.1.1] - 2025-10-07
+
+### Fixed - Package Loading Issue 🔧
+- **CRITICAL**: Removed NVIDIA NIM AI Agent node from package distribution
+- **Root Cause**: Community packages cannot include complex LangChain agent dependencies
+- **Issue**: Package published successfully to npm but failed to load in n8n with "Class could not be found" error
+- **Solution**: Use n8n's built-in AI Agent node instead
+
+### Changed - Architecture Simplification
+- **Removed from package.json**: `dist/nodes/NvidiaNim/NvidiaNimAgent.node.js`
+- **Package now includes only**:
+  - `NVIDIA NIM` node (simple chat completions)
+  - `NVIDIA NIM Chat Model` sub-node (for AI Agents)
+
+### Removed - Codebase Cleanup 🧹
+- **Source Files**: Deleted `NvidiaNimAgent.node.ts` (345 lines, no longer needed)
+- **Compiled Files**: Removed all NvidiaNimAgent compiled outputs from dist/
+- **Documentation**: Removed `docs/` folder (9 files, ~183KB of development/research docs)
+- **Dependencies**: Removed unused `langchain` package (saved 5 packages)
+  - Kept only essential: `@langchain/core` and `@langchain/openai`
+
+### Improved - Visual Design ✨
+- **New Icon**: Completely redesigned `nvidia-nim.svg` with modern, professional look
+  - Enhanced NVIDIA eye logo with depth and shadows
+  - Added neural network connection pattern
+  - Integrated AI chip icon for inference representation
+  - Improved color gradients and glow effects
+  - Better scalability and contrast
+  - Professional "NIM" badge design
+
+### Recommended Usage
+Use the **NVIDIA NIM Chat Model** sub-node with **n8n's built-in AI Agent**:
+```
+Workflow:
+├─ NVIDIA NIM Chat Model ← Configure your NVIDIA model
+├─ AI Agent (n8n built-in) ← Handles tools, memory, orchestration
+└─ [Output]
+```
+
+### Why This Change?
+- **Community Package Limitations**: n8n community packages cannot bundle complex agent orchestration logic
+- **Dependency Resolution**: LangChain agent imports (`langchain/agents`, `@langchain/core/prompts`) fail to load in n8n runtime
+- **Better Architecture**: n8n's built-in AI Agent is designed for this - community packages should provide models/tools
+- **Simpler for Users**: One clear path, no confusion about which agent to use
+
+### Benefits
+- ✅ Package loads successfully in n8n
+- ✅ Clearer architecture and user experience  
+- ✅ Access to all n8n AI Agent features (tools, memory, etc.)
+- ✅ Better maintained by n8n core team
+- ✅ Significantly smaller package size (~37KB dist)
+- ✅ Fewer dependencies to install and resolve
+- ✅ Cleaner, more maintainable codebase
+- ✅ Professional, modern icon design
+
+### Documentation Updated
+- README examples now show correct architecture
+- Removed references to custom Agent node
+- Clarified sub-node pattern with built-in AI Agent
+- Updated package description
+
+### Technical Details
+- Deleted NvidiaNimAgent source and compiled files
+- Sub-node pattern (`supplyData()`) works correctly for community packages
+- Agent orchestration handled by n8n's built-in nodes
+- Added `docs/` to `.gitignore` to prevent future bloat
+
+## [2.1.0] - 2025-10-07 ⚠️ DEPRECATED - Package Loading Error
 
 ### Added - AI Agent Node 🤖⭐
 - **NVIDIA NIM AI Agent Node** ⭐ NEW: Complete AI Agent implementation with ReAct pattern

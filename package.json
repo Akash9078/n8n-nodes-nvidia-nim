@@ -1,7 +1,7 @@
 {
 	"name": "n8n-nodes-nvidia-nim",
-	"version": "2.1.0",
-	"description": "n8n community node for NVIDIA NIM - Complete AI Agent with ReAct pattern, intelligent tool calling, and memory management",
+	"version": "2.1.1",
+	"description": "n8n community node for NVIDIA NIM - Chat Model sub-node for n8n's AI Agent with LangChain integration",
 	"keywords": [
 		"n8n-community-node-package",
 		"n8n",
@@ -47,8 +47,7 @@
 		],
 		"nodes": [
 			"dist/nodes/NvidiaNim/NvidiaNim.node.js",
-			"dist/nodes/NvidiaNim/LmChatNvidiaNim.node.js",
-			"dist/nodes/NvidiaNim/NvidiaNimAgent.node.js"
+			"dist/nodes/NvidiaNim/LmChatNvidiaNim.node.js"
 		]
 	},
 	"devDependencies": {
@@ -65,7 +64,6 @@
 	},
 	"dependencies": {
 		"@langchain/core": "^0.3.78",
-		"@langchain/openai": "^0.6.14",
-		"langchain": "^0.3.35"
+		"@langchain/openai": "^0.6.14"
 	}
 }
