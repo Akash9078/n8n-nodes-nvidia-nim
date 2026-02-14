@@ -37,6 +37,15 @@ npm install n8n-nodes-nvidia-nim
 
 ## 🎯 Basic Usage
 
+### AI Agent / AI Chain (Chat Model)
+
+1. Add **NVIDIA NIM Chat Model** node
+2. Select a model (for example: `meta/llama-3.1-8b-instruct`)
+3. Connect the Chat Model output to:
+   - **AI Agent** → **Chat Model** input, or
+   - **AI Chain** → **Model** input
+4. Configure your prompt/chain and execute workflow
+
 ### Text Chat
 
 1. Add "NVIDIA NIM" node → Configure model (e.g., `meta/llama3-8b-instruct`)

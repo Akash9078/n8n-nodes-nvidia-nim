@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.4] - 2026-02-14
+
+### Added - NVIDIA NIM Chat Model Sub-Node for Agents/Chains
+- **NVIDIA NIM Chat Model**: Added `LmChatNvidiaNim` as a dedicated Chat Model sub-node
+- **AI Compatibility**: Exposes `NodeConnectionTypes.AiLanguageModel` output for n8n **AI Agent** and **AI Chain** nodes
+- **OpenAI-Compatible Runtime**: Uses `ChatOpenAI` with NVIDIA NIM credentials (`baseUrl` + API key)
+- **Model Discovery**: Dynamic model loading from `GET /models`
+- **Chat Options**: Added temperature, topP, maxTokens, timeout, maxRetries, penalties, and response format options
+
+### Changed
+- **Package Registration**: Included `dist/nodes/NvidiaNim/LmChatNvidiaNim.node.js` in `package.json`
+- **Dependencies**: Restored LangChain runtime dependencies needed by Chat Model sub-node
+- **Documentation**: Added README usage flow for connecting NVIDIA NIM Chat Model to AI Agent/AI Chain
+
 ## [2.3.1] - 2025-10-07
 
 ### Changed - Model Restrictions for Image Analysis
