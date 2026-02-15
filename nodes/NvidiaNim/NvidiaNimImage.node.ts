@@ -311,10 +311,18 @@ export class NvidiaNimImage implements INodeType {
 
 		// Process each input item
 		for (let i = 0; i < items.length; i++) {
+			let model: string = 'unknown';
+			
 			try {
 				// Handle resourceLocator format for model parameter
-				const modelResource = this.getNodeParameter('model', i) as { mode: string; value: string };
-				const model = modelResource.value || modelResource as any as string;
+				const modelResource = this.getNodeParameter('model', i) as { mode: string; value: string | undefined };
+				if (typeof modelResource === 'object' && modelResource.value) {
+					model = modelResource.value;
+				} else if (typeof modelResource === 'string') {
+					model = modelResource;
+				} else {
+					throw new NodeOperationError(this.getNode(), 'Invalid model parameter', { itemIndex: i });
+				}
 				const imageData = this.getNodeParameter('imageData', i) as string;
 				const prompt = this.getNodeParameter('prompt', i) as string;
 				const additionalOptions = this.getNodeParameter('additionalOptions', i, {}) as AdditionalOptions;
@@ -365,30 +373,36 @@ export class NvidiaNimImage implements INodeType {
 						url: '/chat/completions',
 						body,
 						json: true,
+						timeout: 120000,
 					},
 				);
 
 				// Add to return data with proper item linking
 				returnData.push({
-					json: responseData,
+					json: { ...responseData },
 					pairedItem: { item: i },
 				});
 
 			} catch (error) {
-				// Handle errors gracefully
+				const errorMessage = error instanceof Error ? error.message : String(error);
+				
 				if (this.continueOnFail()) {
-					const errorMessage = error instanceof Error ? error.message : String(error);
 					returnData.push({
 						json: {
 							error: errorMessage,
 							item: i,
+							model,
+							timestamp: new Date().toISOString(),
 						},
 						pairedItem: { item: i },
 					});
 					continue;
 				}
-				const errorObj = error instanceof Error ? error : new Error(String(error));
-				throw new NodeOperationError(this.getNode(), errorObj, { itemIndex: i });
+				throw new NodeOperationError(
+					this.getNode(),
+					`Failed to process image analysis: ${errorMessage}`,
+					{ itemIndex: i },
+				);
 			}
 		}
 

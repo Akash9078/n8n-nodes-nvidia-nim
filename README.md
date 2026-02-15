@@ -54,19 +54,26 @@ npm install n8n-nodes-nvidia-nim
 
 ### Text Models
 
-- `meta/llama3-8b-instruct` ⭐ (recommended)
-- `meta/llama3-70b-instruct`
-- `meta/llama3-405b-instruct`
+Current recommended models include:
+
+- `meta/llama-3.1-8b-instruct` ⭐ (recommended, fast & efficient)
+- `meta/llama-3.1-70b-instruct` (high quality)
+- `meta/llama-3.1-405b-instruct` (best performance)
+- `nvidia/nemotron-4-340b-instruct` (enterprise-grade)
 - `mistralai/mixtral-8x7b-instruct-v0.1`
+- `deepseek-ai/deepseek-r1` (reasoning models)
+- `google/gemma-2-27b-it`
+- `snowflake/snowflake-arctic-instruct`
 
 [View all models →](https://docs.nvidia.com/nim/)
+[Try NVIDIA NIM APIs →](https://build.nvidia.com/)
 
 ### Vision Models
 
 - `meta/llama-3.2-11b-vision-instruct` ⭐ (recommended)
 - `meta/llama-3.2-90b-vision-instruct`
 
-[View all vision models →](https://docs.nvidia.com/nim/)
+[View all vision models →](https://docs.nvidia.com/nim/vision-language-models/latest/supported-models.html)
 
 ## ⚙️ Configuration
 
